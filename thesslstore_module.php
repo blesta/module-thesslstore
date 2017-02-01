@@ -1480,6 +1480,43 @@ class ThesslstoreModule extends Module {
     }
 
     /**
+     * Edits the service on the remote server. Sets Input errors on failure,
+     * preventing the service from being edited.
+     *
+     * @param stdClass $package A stdClass object representing the current package
+     * @param stdClass $service A stdClass object representing the current service
+     * @param array $vars An array of user supplied info to satisfy the request
+     * @param stdClass $parent_package A stdClass object representing the parent
+     *  service's selected package (if the current service is an addon service)
+     * @param stdClass $parent_service A stdClass object representing the parent
+     *  service of the service being edited (if the current service is an addon service)
+     * @return array A numerically indexed array of meta fields to be stored for this service containing:
+     *  - key The key for this meta field
+     *  - value The value for this key
+     *  - encrypted Whether or not this field should be encrypted (default 0, not encrypted)
+     * @see Module::getModule()
+     * @see Module::getModuleRow()
+     */
+    public function editService($package, $service, array $vars = null, $parent_package = null, $parent_service = null)
+    {
+        // Set fields to update locally
+        $service_fields = ['thesslstore_token', 'thesslstore_order_id', 'thesslstore_fqdn'];
+        foreach ($service_fields as $field) {			
+			// check if the field is set and is not empty
+			if (isset($vars[$field]) && $vars[$field] != '') {
+				$service_fields[$field] = trim($vars[$field]);
+			}
+        }
+		
+		$fields = []; 
+        foreach ($service_fields as $key => $value) {
+            $fields[] = ['key' => $key, 'value' => $value];
+        }
+
+        return $fields;
+    }
+    
+    /**
      * Allows the module to perform an action when the service is ready to renew.
      * Sets Input errors on failure, preventing the service from renewing.
      *
@@ -1793,6 +1830,50 @@ class ThesslstoreModule extends Module {
         return $productsArray;
     }
 
+    /**
+     * Returns all fields to display to an admin attempting to edit a service with the module
+     *
+     * @param stdClass $package A stdClass object representing the selected package
+     * @param $vars stdClass A stdClass object representing a set of post fields
+     * @return ModuleFields A ModuleFields object, containg the fields to render as
+     *  well as any additional HTML markup to include
+     */
+    public function getAdminEditFields($package, $vars = null)
+    {
+        Loader::loadHelpers($this, ['Html']);
+
+        $fields = new ModuleFields();
+
+        // Create domain label
+        $thesslstore_fqdn = $fields->label(Language::_('ThesslstoreModule.tab_client_cert_details.domains', true), 'thesslstore_fqdn');
+        // Create domain field and attach to domain label
+        $thesslstore_fqdn->attach(
+            $fields->fieldText('thesslstore_fqdn', $this->Html->ifSet($vars->thesslstore_fqdn), ['id'=>'thesslstore_fqdn'])
+        );
+        // Set the label as a field
+        $fields->setField($thesslstore_fqdn);
+
+        // Create order id label
+        $thesslstore_order_id = $fields->label(Language::_('ThesslstoreModule.tab_client_cert_details.store_order_id', true), 'thesslstore_order_id');
+        // Create order id field and attach to order id label
+        $thesslstore_order_id->attach(
+            $fields->fieldText('thesslstore_order_id', $this->Html->ifSet($vars->thesslstore_order_id), ['id'=>'thesslstore_order_id'])
+        );
+        // Set the label as a field
+        $fields->setField($thesslstore_order_id);
+
+        // Create token label
+        $thesslstore_token = $fields->label(Language::_('ThesslstoreModule.tab_client_cert_details.token', true), 'thesslstore_token');
+        // Create token field and attach to token label
+        $thesslstore_token->attach(
+            $fields->fieldText('thesslstore_token', $this->Html->ifSet($vars->thesslstore_token), ['id'=>'thesslstore_token'])
+        );
+        // Set the label as a field
+        $fields->setField($thesslstore_token);
+
+        return $fields;
+    }
+    
     /**
      * Returns all tabs to display to a client when managing a service whose
      * package uses this module
