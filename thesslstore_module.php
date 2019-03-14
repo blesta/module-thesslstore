@@ -9,7 +9,7 @@ class ThesslstoreModule extends Module {
     /**
      * @var string The version of this module
      */
-    private static $version = "1.7.0";
+    private static $version = "1.8.0";
 
     /**
      * @var string The name of this module
@@ -21,6 +21,12 @@ class ThesslstoreModule extends Module {
      */
 
     private $api_partner_code = '';
+
+    /**
+     * @var string API Mode
+     */
+
+    private $is_sandbox_mode = 'n';
     /**
      * @var string The authors of this module
      */
@@ -71,6 +77,8 @@ class ThesslstoreModule extends Module {
      */
     public function install()
     {
+        //Create database table
+        $this->createTables();
         // Add cron tasks for this module
         $this->addCronTasks($this->getCronTasks());
     }
@@ -123,6 +131,89 @@ class ThesslstoreModule extends Module {
         // Upgrade if possible
         if (version_compare($current_version, '1.7.0', '<')) {
             $this->addCronTasks($this->getCronTasks());
+        }
+
+        // Upgrade if possible
+        if (version_compare($current_version, '1.8.0', '<')) {
+            $this->createTables();
+            $this->make_db_entry_in_ssl_orders();
+        }
+    }
+
+    /*
+     * Perform a database operation like create table etc. when module being installed
+     */
+    private function createTables(){
+        if (!isset($this->Record)) {
+            Loader::loadComponents($this, ['Record']);
+        }
+        try{
+            $this->Record->query("
+             CREATE TABLE IF NOT EXISTS sslstore_orders(
+            id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+            service_id int(10) UNSIGNED NOT NULL,
+            package_id int(10) UNSIGNED NOT NULL,
+            invoice_id int(10) UNSIGNED NOT NULL,
+            store_order_id int(10) UNSIGNED NOT NULL,
+            renew_to int(10) UNSIGNED NOT NULL DEFAULT '0',
+            renew_from int(10) UNSIGNED NOT NULL DEFAULT '0',
+            is_sandbox_order enum('y','n') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'n',
+            created datetime DEFAULT NULL,
+            PRIMARY KEY (id)
+            )");
+        }
+        catch(Exception $e){
+            $this->log('Database operation', $e->getMessage(),'output', false);
+        }
+    }
+
+    /*
+     *  Make an entry of old records in ssl_orders table
+     */
+
+    private function make_db_entry_in_ssl_orders(){
+        if (!isset($this->Record)) {
+            Loader::loadComponents($this, ['Record']);
+        }
+        if (!isset($this->Services)){
+            Loader::loadModels($this, ['Services']);
+        }
+
+        $services = $this->getAllServiceIds();
+        foreach($services as $service){
+
+            // Fetch the service
+            if (!($service_obj = $this->Services->get($service->id))) {
+                continue;
+            }
+
+            $fields = $this->serviceFieldsToObject($service_obj->fields);
+
+            // Require the SSL Store order ID field be available
+            if (!isset($fields->thesslstore_order_id)){
+                continue;
+            }
+            //the SSL Store order ID not blank
+            if (empty($fields->thesslstore_order_id)){
+                continue;
+            }
+            try{
+                $inserted_order = $this->Record->select(['id'])->from("sslstore_orders")->where("store_order_id", "=", $fields->thesslstore_order_id)->fetch();
+                if(!$inserted_order){
+                    $invoice_data = $this->Record->select(['invoice_id'])->from("service_invoices")->where("service_id", "=", $service_obj->id)->order(array("invoice_id" => "desc"))->fetch();
+                    $this->Record->insert("sslstore_orders",
+                        array('service_id' => $service_obj->id,
+                            'package_id' => $service_obj->package->id,
+                            'invoice_id' => $invoice_data->invoice_id,
+                            'store_order_id' => $fields->thesslstore_order_id,
+                            'created' => $service_obj->date_added
+                        )
+                    );
+                }
+            }
+            catch(Exception $e){
+                $this->log('Database operation: Make Entry in ssl_orders', $e->getMessage(),'output', false);
+            }
         }
     }
 
@@ -262,7 +353,7 @@ class ThesslstoreModule extends Module {
                 }
 
                 // Update renewal date
-                if (!empty($order->CertificateEndDateInUTC)) {
+                if (!empty($order->CertificateEndDateInUTC) && strtolower($order->OrderStatus->MajorStatus) == 'active') {
                     // Get the date 30 days before the certificate expires
                     $end_date = $this->Date->modify(
                         strtotime($order->CertificateEndDateInUTC),
@@ -412,7 +503,6 @@ class ThesslstoreModule extends Module {
      * @return string HTML content containing information to display when viewing the service info
      */
     public function getClientServiceInfo($service, $package) {
-
         if($service->status == 'active') {
             // Load the view into this object, so helpers can be automatically added to the view
             $this->view = new View("client_service_info", "default");
@@ -495,10 +585,12 @@ class ThesslstoreModule extends Module {
                     if($api_mode == 'LIVE'){
                         $api_partner_code = $row->meta->api_partner_code_live;
                         $api_auth_token = $row->meta->api_auth_token_live;
+                        $this->is_sandbox_mode = 'n';
                     }
                     else{
                         $api_partner_code = $row->meta->api_partner_code_test;
                         $api_auth_token = $row->meta->api_auth_token_test;
+                        $this->is_sandbox_mode = 'y';
                     }
                     break;
                 }
@@ -507,7 +599,7 @@ class ThesslstoreModule extends Module {
 
         $this->api_partner_code = $api_partner_code;
 
-        $api = new thesslstoreApi($api_partner_code, $api_auth_token, $token, $tokenID = '', $tokenCode = '', $IsUsedForTokenSystem, $api_mode);
+        $api = new thesslstoreApi($api_partner_code, $api_auth_token, $token, $tokenID = '', $tokenCode = '', $IsUsedForTokenSystem, $api_mode,'Blesta-'.$this->getVersion());
 
         return $api;
     }
@@ -1770,9 +1862,13 @@ class ThesslstoreModule extends Module {
      * @see Module::getModuleRow()
      */
     public function addService($package, array $vars=null, $parent_package=null, $parent_service=null, $status="pending") {
+        if (!isset($this->Record)) {
+            Loader::loadComponents($this, ['Record']);
+        }
+
+
         $thesslstore_order_id = '';
         $token = '';
-
 
         if($vars["use_module"] == "true") {
 
@@ -1814,6 +1910,27 @@ class ThesslstoreModule extends Module {
                 $thesslstore_order_id = $result->TheSSLStoreOrderID;
                 $token = $result->Token;
 
+                //make entry in database
+                //get invoice id
+                $invoice_data = $this->Record->select(['invoice_id'])->from("service_invoices")->where("service_id", "=", $vars['service_id'])->order(array("invoice_id"=>"desc"))->fetch();
+                if($invoice_data){
+                    try{
+                        $this->Record->insert("sslstore_orders",
+                            array('service_id' => $vars['service_id'],
+                                'package_id' => $package->id,
+                                'invoice_id' => $invoice_data->invoice_id,
+                                'store_order_id' => $thesslstore_order_id,
+                                'is_sandbox_order' => $this->is_sandbox_mode,
+                                'created' => date('Y-m-d H:i:s')
+                            )
+                        );
+                    }
+                    catch(Exception $e){
+                        $this->log('Database operation: Add Service', $e->getMessage(),'output', false);
+                    }
+                }
+
+
             }
             else {
                 $this->Input->setErrors(array('api' => array('internal' => 'No OrderID')));
@@ -1852,6 +1969,9 @@ class ThesslstoreModule extends Module {
      * @see Module::getModuleRow()
      */
     public function renewService($package, $service, $parent_package=null, $parent_service=null) {
+        if (!isset($this->Record)) {
+            Loader::loadComponents($this, ['Record']);
+        }
 
         $thesslstore_order_id = '';
         $thesslstore_token = '';
@@ -1870,7 +1990,7 @@ class ThesslstoreModule extends Module {
 
         $invite_order_req = new order_inviteorder_request();
         $invite_order_req->AddInstallationSupport = false;
-        $invite_order_req->CustomOrderID = uniqid('TinyOrder-');
+        $invite_order_req->CustomOrderID = uniqid('Renew-');
         $invite_order_req->EmailLanguageCode = 'EN';
         $invite_order_req->PreferVendorLink = false;
         $invite_order_req->ProductCode = $package->meta->thesslstore_product_code;
@@ -1913,9 +2033,33 @@ class ThesslstoreModule extends Module {
             return null;
         }
 
-        if(!empty($result->TheSSLStoreOrderID)) {
+        if(!empty($result->TheSSLStoreOrderID)){
             $thesslstore_order_id = $result->TheSSLStoreOrderID;
             $thesslstore_token = $result->Token;
+
+            //make entry in database
+            //get invoice id
+            $invoice_data = $this->Record->select(['invoice_id'])->from("service_invoices")->where("service_id", "=", $service->id)->order(array("invoice_id"=>"desc"))->fetch();
+            if($invoice_data){
+                try{
+                    $this->Record->insert("sslstore_orders",
+                        array('service_id' => $service->id,
+                            'package_id' => $package->id,
+                            'invoice_id' => $invoice_data->invoice_id,
+                            'store_order_id' => $thesslstore_order_id,
+                            'renew_from' => $old_thesslstore_order_id,
+                            'is_sandbox_order' => $this->is_sandbox_mode,
+                            'created' => date('Y-m-d H:i:s')
+                        )
+                    );
+
+                    //update old record
+                    $this->Record->where("store_order_id", "=", $old_thesslstore_order_id)->update("sslstore_orders", array('renew_to' => $thesslstore_order_id));
+                }
+                catch(Exception $e){
+                    $this->log('Database operation: Renew Service', $e->getMessage(),'output', false);
+                }
+            }
 
             $service_meta[] = array(
                 'key' => "thesslstore_order_id",
@@ -1925,6 +2069,12 @@ class ThesslstoreModule extends Module {
             $service_meta[] = array(
                 'key' => "thesslstore_token",
                 'value' => $thesslstore_token,
+                'encrypted' => 0
+            );
+
+            $service_meta[] = array(
+                'key' => "thesslstore_renew_from",
+                'value' => $old_thesslstore_order_id,
                 'encrypted' => 0
             );
             $send_invite_order_email = true;
@@ -2101,36 +2251,54 @@ class ThesslstoreModule extends Module {
      * @see Module::getModuleRow()
      */
     public function cancelService($package, $service, $parent_package=null, $parent_service=null) {
+        /*
+         * This method will called only if user has selected "Immediately" cancellation.
+         */
+        if (!isset($this->Record)) {
+            Loader::loadComponents($this, ['Record']);
+        }
         if($service->status == 'active') {
             // Get the service fields
             $service_fields = $this->serviceFieldsToObject($service->fields);
             // Get the Order ID
-            $orderID=$service_fields->thesslstore_order_id;
-            //Raise Refund Request
-            $api = $this->getApi();
-            $refundReq = new order_refundrequest_request();
-            $refundReq->RefundReason = 'Requested by User!';
-            $refundReq->TheSSLStoreOrderID =$orderID;
+            $orderID = $service_fields->thesslstore_order_id;
 
-            $this->log($this->api_partner_code . "|ssl-refund-request", serialize($refundReq), "input", true);
-            $refundRes = $api->order_refundrequest($refundReq);
-            if(!$refundRes->AuthResponse->Message[0])
-            {
-                $errorMessage=$refundRes->AuthResponse->Message;
+            //get last generated invoice id of current service
+            $last_invoice = $this->Record->select(['invoice_id'])->from("service_invoices")->where("service_id", "=", $service->id)->order(array("invoice_id"=>"desc"))->fetch();
+
+            //get invoice id for current order
+            $current_invoice = $this->Record->select(['invoice_id'])->from("sslstore_orders")->where("store_order_id", "=", $orderID)->fetch();
+
+            /*
+             * If the customer does not pay their renewal invoice and is submitted for cancellation it errors out when processing with the error message "ErrorCode:-9032|Message:Certificate cannot cancel after 30 days of activation."
+             * Below condition prevent above errors.
+             */
+            if($last_invoice->invoice_id  == $current_invoice->invoice_id){
+
+                //Raise Refund Request
+                $api = $this->getApi();
+                $refundReq = new order_refundrequest_request();
+                $refundReq->RefundReason = 'Requested by User!';
+                $refundReq->TheSSLStoreOrderID = $orderID;
+
+                $this->log($this->api_partner_code . "|ssl-refund-request", serialize($refundReq), "input", true);
+                $refundRes = $api->order_refundrequest($refundReq);
+                if(!$refundRes->AuthResponse->Message[0]){
+                    $errorMessage = $refundRes->AuthResponse->Message;
+                } else{
+                    $errorMessage = $refundRes->AuthResponse->Message[0];
+                }
+                if($refundRes != NULL && $refundRes->AuthResponse->isError == false){
+                    $this->log($this->api_partner_code . "|ssl-refund-response", serialize($refundRes), "output", true);
+                    return null;
+                } else{
+                    $this->log($this->api_partner_code . "|ssl-refund-response", serialize($refundRes), "output", false);
+                    $this->Input->setErrors(array('invalid_action' => array('internal' => $errorMessage)));
+                    return;
+                }
             }
-            else{
-                $errorMessage=$refundRes->AuthResponse->Message[0];
-            }
-            if($refundRes != NULL && $refundRes->AuthResponse->isError == false){
-                $this->log($this->api_partner_code."|ssl-refund-response", serialize($refundRes), "output", true);
-                return null;
-            }
-            else {
-                $this->log($this->api_partner_code."|ssl-refund-response", serialize($refundRes), "output", false);
-                $this->Input->setErrors(array('invalid_action' => array('internal' => $errorMessage)));
-                return;
-            }
-        }return null;
+        }
+        return null;
     }
 
     /**
@@ -2220,6 +2388,7 @@ class ThesslstoreModule extends Module {
                 //Certificate Details
                 $certificate['order_status'] = $order_resp->OrderStatus->MajorStatus;
                 $certificate['store_order_id'] = $service_fields->thesslstore_order_id;
+                $certificate['renew_from'] = (isset($service_fields->thesslstore_renew_from) ? $service_fields->thesslstore_renew_from : '' );
                 $certificate['vendor_order_id'] = $order_resp->VendorOrderID;
                 $certificate['vendor_status'] = $order_resp->OrderStatus->MinorStatus;
                 $certificate['token'] = $order_resp->Token;
@@ -3479,9 +3648,16 @@ class ThesslstoreModule extends Module {
                 Loader::loadHelpers($this, array("Form", "Html", "Widget"));
             // Get the service fields
             $service_fields = $this->serviceFieldsToObject($service->fields);
-            $orderID=$service_fields->thesslstore_order_id;
+            $orderID = $service_fields->thesslstore_order_id;
+            $renewFrom = (isset($service_fields->thesslstore_renew_from) ? $service_fields->thesslstore_renew_from : '' );
             // Gether order info using the order status request
             $order_resp = $this->getSSLOrderStatus($orderID);
+
+            $this->view->set("orderMajorStatus", $order_resp->OrderStatus->MajorStatus);
+            $this->view->set("storeOrderId", $order_resp->TheSSLStoreOrderID);
+            $this->view->set("token", $order_resp->Token);
+            $this->view->set("renewFrom", $renewFrom);
+
             //Major Status Initial
             if($order_resp->OrderStatus->MajorStatus!='Initial')
             {
@@ -3491,10 +3667,10 @@ class ThesslstoreModule extends Module {
                 $this->view->set("serviceID", $service->id);
                 $this->view->set("clientID", $service->client_id);
                 $this->view->set("orderMajorStatus", $order_resp->OrderStatus->MajorStatus);
-                $this->view->set("orderMinorStatus", $order_resp->OrderStatus->MinorStatus);
                 $this->view->set("fileName", $fileName);
                 $this->view->set("fileContent", $fileContent);
                 $this->view->set("VendorName", $order_resp->VendorName);
+                $this->view->set("RenewFrom", $renewFrom);
 
                 /* Retrieve the module row for change approver option */
                 $module_rows = $this->getModuleRows();
@@ -3507,14 +3683,7 @@ class ThesslstoreModule extends Module {
 
                 return $this->view->fetch();
             }
-            else
-            {
-                return '<section class="error_section">
-                            <article class="error_box error">
-                                <p style="padding:0 0 0 37px">'.Language::_("ThesslstoreModule.!error.initial_order_status", true).'</p>
-                            </article>
-                        </section>';
-            }
+            return $this->view->fetch();
         }
         else
         {
