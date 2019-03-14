@@ -77,6 +77,7 @@ $lang['ThesslstoreModule.success.generate_cert'] = "Certificate generation proce
 $lang['ThesslstoreModule.tab_CertDetails'] = "Certificate Details";
 $lang['ThesslstoreModule.tab_client_cert_details'] = "Certificate Details";
 $lang['ThesslstoreModule.tab_client_cert_details.order_status'] = "Order Status";
+$lang['ThesslstoreModule.tab_client_cert_details.renew_from'] = "Renew From";
 $lang['ThesslstoreModule.tab_client_cert_details.store_order_id'] = "Store Order ID";
 $lang['ThesslstoreModule.tab_client_cert_details.token'] = "Token";
 $lang['ThesslstoreModule.tab_client_cert_details.package_name'] = "Package Name";
