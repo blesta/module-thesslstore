@@ -13,7 +13,7 @@ if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
 <?php
 } ?>
 <div class="panel-pad">
-    <h3><?php $this->_("ThesslstoreModule.tab_client_cert_details"); ?></h3>
+    <h3><?php $this->_("ThesslstoreModule.tab_client_cert_details"); ?> </h3>
     <?php
     if($certificate->order_status == 'Initial'){?>
         <div class="row">
@@ -31,7 +31,15 @@ if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
                 <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.store_order_id"); ?></label>
             </div>
             <div class="col-md-9 service-info">
-                <h4><?php $this->Html->_($certificate->store_order_id); ?></h4>
+                <h4>
+                    <?php $this->Html->_($certificate->store_order_id);
+                    if($certificate->renew_from != ''){ ?>
+                        (<?php $this->_("ThesslstoreModule.tab_client_cert_details.renew_from") ?>: <?php $this->Html->_($certificate->renew_from); ?> )
+                    <?php
+                    }
+                    ?>
+
+                </h4>
             </div>
 
             <div class="col-md-3 service-info">
@@ -63,7 +71,13 @@ if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
                 <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.store_order_id"); ?></label>
             </div>
             <div class="col-md-9 service-info">
-                <h4><?php $this->Html->_($certificate->store_order_id); ?></h4>
+                <h4><?php $this->Html->_($certificate->store_order_id);
+                    if($certificate->renew_from != ''){ ?>
+                        (<?php $this->_("ThesslstoreModule.tab_client_cert_details.renew_from") ?>: <?php $this->Html->_($certificate->renew_from); ?> )
+                    <?php
+                    }
+                ?>
+                </h4>
             </div>
 
             <div class="col-md-3 service-info">
