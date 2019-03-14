@@ -25,7 +25,7 @@ class thesslstoreApi
     private $_IsUsedForTokenSystem=false;
     private $_userAgent='';
 
-    function __construct($partnerCode,$authToken,$token,$tokenID,$tokenCode,$IsUsedForTokenSystem,$apimode, $userAgent = 'Blesta-1.4.0')
+    function __construct($partnerCode,$authToken,$token,$tokenID,$tokenCode,$IsUsedForTokenSystem,$apimode, $userAgent = 'Blesta-1.8.0')
     {
             $this->EnsurePHPVersion();
             $this->_apimode = $apimode;
