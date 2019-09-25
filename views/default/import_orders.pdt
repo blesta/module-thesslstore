@@ -1,0 +1,242 @@
+<?php
+   if(isset($_REQUEST['error']) && $_REQUEST['error']=='false')
+   {
+   ?>
+<section class="error_section">
+   <article class="error_box">
+      <a class="close" href="#">&times;</a>
+   </article>
+</section>
+<?php
+   }
+   if(isset($_REQUEST['error']) && $_REQUEST['error']=='true')
+         {
+         ?>
+<section class="error_section">
+   <article class="error_box error">
+      <a class="close" href="#">&times;</a>
+      <p><?php echo $_REQUEST['errormsg'];?></p>
+   </article>
+</section>
+<?php
+   }
+   if(isset($_REQUEST['msg']) && $_REQUEST['msg']=='success')
+            {
+            ?>
+   <section class="error_section">
+      <article class="error_box">
+         <a class="close" href="#">&times;</a>
+         <p><?php $this->_("ThesslstoreModule.!success.import_order_success");?></p>
+      </article>
+   </section>
+   <?php
+      }
+   echo $this->Html->ifSet($message);
+   
+   $this->Widget->clear();
+   $this->Widget->create($this->_("ThesslstoreModule.add_row.box_title", true));
+   
+   $this->Form->create($uri = null, $attributes = array('id' => "frmImport"));
+   ?>
+<div class="inner">
+   <div class="title_row first">
+      <h3><?php $this->_("ThesslstoreModule.add_row.import_orders");?></h3>
+   </div>
+   <?php
+      if($vars->clients=='false')
+      {
+      ?>
+   <div class="error_box error"><?php $this->_("ThesslstoreModule.!error.empty_client");?></div>
+   <?php
+      }
+      else
+      {
+      ?>
+   <div class="pad">
+      <ul>
+         <li>
+            <?php
+               $this->Form->label($this->_("ThesslstoreModule.row_meta.store_order_id", true), "store_order_id");
+               $this->Form->fieldText("store_order_id", $this->Html->ifSet($vars->store_order_id), array('id' => "store_order_id"));
+               ?>
+         </li>
+         <li>
+            <?php
+               $this->Form->fieldRadio("order_type", "new_order", true, array('id' => "import_order_type_new") );
+               $this->Form->label($this->_("ThesslstoreModule.row_meta.import_order_type_new", true), "import_order_type_new", array('class' => "inline"));
+               ?>
+         </li>
+         <li>
+            <?php
+               $this->Form->fieldRadio("order_type", "existing_order", false, array('id' => "import_order_type_existing") );
+               $this->Form->label($this->_("ThesslstoreModule.row_meta.import_order_type_existing", true), "import_order_type_existing", array('class' => "inline"));
+               ?>
+         </li>
+         <div id="new-order">
+             <li>
+                <?php
+                   $this->Form->label($this->_("ThesslstoreModule.row_meta.client_label", true), "client");
+                   $this->Form->fieldSelect("client",$vars->clients,'', array('id' => "client"));
+                   ?>
+             </li>
+             <li>
+                <?php
+                    $this->Form->label($this->_("ThesslstoreModule.row_meta.invoice_method_label", true),"" ,array() );
+
+                    $this->Form->fieldRadio("invoice_method", "create", true, array('id' => "invoice_method_create") );
+                    $this->Form->label($this->_("ThesslstoreModule.row_meta.invoice_method_create", true), "invoice_method_create", array('class' => "inline"));
+
+                    $this->Form->fieldRadio("invoice_method", "append", false, array('id' => "invoice_method_append") );
+                    $this->Form->label($this->_("ThesslstoreModule.row_meta.invoice_method_append", true), "invoice_method_append", array('class' => "inline"));
+                    $this->Form->fieldSelect("invoice",$vars->invoices,'', array('id' => "invoice_id"));
+
+                    $this->Form->fieldRadio("invoice_method", "none", false, array('id' => "invoice_method_none") );
+                    $this->Form->label($this->_("ThesslstoreModule.row_meta.invoice_method_none", true), "invoice_method_none", array('class' => "inline"));
+                ?>
+             </li>
+             <li>
+                <?php
+                    $this->Form->fieldCheckbox("send_email", "yes",$this->Html->ifSet($vars->send_email) == "yes", array('id' => 'send_email') );
+                    $this->Form->label( $this->_("ThesslstoreModule.row_meta.send_email_label", true), 'send_email',array('class' => "inline") );
+                ?>
+             </li>
+         </div>
+         <div id="existing-order">
+             <li>
+                <?php
+                   $this->Form->label($this->_("ThesslstoreModule.row_meta.service_id_label", true), "service_id");
+                   $this->Form->fieldSelect("service_id",$vars->services,'', array('id' => "service_id"));
+                   ?>
+             </li>
+         </div>
+      </ul>
+   </div>
+   <div class="links_row">
+       <button class="btn btn-primary submit btn-sm"  type="submit" onclick="ddlValidate(event);">
+              <?php $this->_("ThesslstoreModule.import_orders_row.add_btn");?>
+       </button>
+   </div>
+
+
+<?php
+   $this->Form->end();
+   ?>
+   <div class="pricingtable pricingdetail">
+      <table class="table">
+         <thead>
+             <tr class="heading_row">
+                <td>Client#</td>
+                <td>Store Order ID</td>
+                <td>Package Name</td>
+                <td>Product Code</td>
+                <td>Term</td>
+                <td>Date Added</td>
+                <td>Date Renews</td>
+                <td>Options</td>
+             </tr>
+         </thead>
+         <?php
+            $odd = false;
+            foreach($vars->importOrderData as $order)
+            {
+                if($odd == true){
+                    $odd_row = 'odd_row';
+                    $odd = false;
+                }
+                elseif($odd == false){
+                    $odd_row = '';
+                    $odd = true;
+                }
+                ?>
+                 <tr class="price_row <?php echo $odd_row; ?>">
+                    <td class="small"><a href="/admin/clients/view/<?php echo $order->client_id; ?>/"><?php echo $order->client_id; ?></a></td>
+                    <td class="small"><?php echo $order->store_order_id; ?></td>
+                    <td class="large"><?php echo $order->package_name; ?></td>
+                    <td class="medium"><?php echo $order->product_code; ?></td>
+                    <td class="small"><?php echo $order->term.' '.$order->period; ?></td>
+                    <td class="medium"><?php echo $order->date_added; ?></td>
+                    <td class="medium"><?php echo $order->date_renews; ?></td>
+                    <td class="small"><a class="manage" href="/admin/clients/editservice/<?php echo $order->client_id; ?>/<?php echo $order->service_id; ?>/">Manage</a></td>
+                 </tr>
+             <?php
+                }
+                ?>
+      </table>
+      <div class="ajax_loader" style="position:fixed;
+                                          width:100%;
+                                          height:100%;
+                                          left:0;
+                                          top:0;
+                                          background:rgba(0,0,0,.5);
+                                          display: none;"><img src="/components/modules/thesslstore_module/views/default/images/icon_loading.gif" style="position:absolute;
+                                                                                                                                                             left:50%;
+                                                                                                                                                             top:50%;
+                                                                                                                                                             margin: -100px 0 0 -100px;"></div>
+   </div>
+   <?php
+      }
+      ?>
+</div>
+
+</div>
+<?php
+   $this->Widget->end();
+   ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+<script type="text/javascript">
+   $('document').ready(function(){
+
+       //show hide based on order type selection
+       $('input[name="order_type"]').change(function(){
+           manageImportOption();
+       })
+       manageImportOption();
+   })
+
+   function manageImportOption(){
+       if($('input[name="order_type"]:checked').val() == 'new_order'){
+           $('div#existing-order').hide();
+           $('div#new-order').show();
+       }
+       else{
+           $('div#existing-order').show();
+           $('div#new-order').hide();
+       }
+   }
+
+    function ddlValidate() {
+        var store_id = document.getElementById("store_order_id").value;
+        if (store_id == '' || isNaN(store_id) ) {
+                alert("Please enter a valid SSL Store OrderID");
+                document.getElementById("store_order_id").focus();
+                event.preventDefault();
+                return false;
+        }
+
+        var radioNewOrder = document.getElementById("import_order_type_new");
+        if (radioNewOrder.checked == true)
+        {
+            if (document.getElementById("client").options[document.getElementById("client").selectedIndex].value == '')
+            {
+                alert("Please select a client");
+                document.getElementById("client").focus();
+                event.preventDefault();
+                return false;
+            }
+        }
+
+        var radioExistingOrder = document.getElementById("import_order_type_existing");
+        if (radioExistingOrder.checked == true)
+        {
+            var service_id = document.getElementById("service_id").value;
+            if (service_id == '' || isNaN(service_id) ) {
+                    alert("Please enter a valid Blesta Service Id");
+                    document.getElementById("service_id").focus();
+                    event.preventDefault();
+                    return false;
+            }
+        }
+        return true;
+    }
+</script>
+

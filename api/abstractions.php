@@ -152,3 +152,31 @@ class productPricing
     public $PricePerAdditionalServer;
     public $SRP;
 }
+
+class cwatch_admin_contact{
+    public $FirstName;
+    public $LastName;
+    public $Phone;
+    public $Email;
+    public $Country;
+}
+
+class digicert_organization_contact{
+    public $Firstname;
+    public $Lastname;
+    public $Email;
+    public $JobTitle;
+    public $Phone;
+    public $Phone_Extension;
+}
+
+class digicert_dcv_details{
+    public $domain;
+    public $dcvMethod;
+    public $dcvStatus;
+    public $FileName;
+    public $FileContents;
+    public $DNSName;
+    public $DNSEntry;
+    public $ExpirationDate;
+}

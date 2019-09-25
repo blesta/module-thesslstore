@@ -23,6 +23,7 @@ class csr_response extends baseresponse
     public $isWildcardCSR = false;
     public $MD5Hash;
     public $SHA1Hash;
+    public $sha256;
     public $RegionSpecificOrderIndicator;
 }
 
@@ -67,6 +68,8 @@ class free_claimfree_response extends baseresponse
 {
     public $isAllowed;
     public $PartnerOrderID;
+    public $TheSSLStoreOrderID;
+    public $VendorOrderID;
     public $LoginName;
     public $LoginPassword;
 }
@@ -102,6 +105,8 @@ class health_validate_token_response extends baseresponse
     public $ProductType;
     public $VendorName;
 }
+
+
 
 
 class order_response extends baseresponse
@@ -167,6 +172,7 @@ class order_response extends baseresponse
     public $CertificateEndDateInUTC;
     public $PurchaseDateInUTC;
     public $PollDateInUTC;
+    public $PreOrganizationId;
 }
 
 class order_approverlist_response extends baseresponse
@@ -280,11 +286,42 @@ class order_query_response extends baseresponse
     public $PollDateInUTC;
 }
 
+class order_modified_summary_response extends baseresponse{
+    public $Orders;
+    public $TotalOrders;
+}
+
+class order_pmr_response extends baseresponse{
+    public $TheSSLStoreOrderID;
+    public $PMRStatus;
+    public $ExpediteDate;
+}
+
 class user_newuser_response extends baseresponse
 {
     public $PartnerCode;
     public $isEnabled;
 }
+
+class user_account_detail_response extends baseresponse
+{
+    public $PartnerCode;
+    public $CompanyName;
+    public $FullName;
+    public $Email;
+    public $AlternateEmail;
+    public $AccountType;
+    public $AccountBalance;
+    public $CurrentPlan;
+    public $AllowCredit;
+    public $Address;
+    public $City;
+    public $Country;
+    public $Phone;
+    public $State;
+    public $Zip;
+}
+
 class user_query_response extends baseresponse
 {
     public $PartnerCode;
@@ -316,4 +353,101 @@ class order_replacement_response extends baseresponse
     public $WebServerType;
     public $ReissueSuccessCode;
 	public $SiteSealurl;*/
+}
+class csr_download_response extends baseresponse{
+    public $CSR;
+}
+
+class cwatch_order_response extends baseresponse{
+
+    public function __construct()
+    {
+        $this->OrderStatus = new orderStatus();
+        $this->AdminContact = new cwatch_admin_contact();
+        parent::__construct();
+    }
+    public $PartnerOrderID;
+    public $CustomOrderID;
+    public $TheSSLStoreOrderID;
+    public $VendorOrderID;
+    public $RefundRequestID;
+    public $isRefundApproved;
+    public $TinyOrderLink;
+    public $OrderStatus;
+    public $OrderAmount;
+    public $PurchaseDate;
+    public $LicenseStartDate;
+    public $LicenseEndDate;
+    public $DomainName;
+    public $Validity;
+    public $ApproverEmail;
+    public $ProductName;
+    public $ProductCode;
+    public $AdminContact;
+    public $Token;
+    public $LicenseKey;
+}
+
+class digicert_create_organization_response extends baseresponse{
+    public $VendorOrganizationId;
+    public $VendorApproversContactId;
+    public $OrganizationId;
+    public $ValidationsTypes;
+}
+
+class digicert_get_organization_response extends baseresponse{
+
+    public function __construct(){
+        $this->OrganizationContact = new digicert_organization_contact();
+        $this->ApproversContact = new digicert_organization_contact();
+        parent::__construct();
+    }
+    public $Name;
+    public $AssumedName;
+    public $Address;
+    public $Address2;
+    public $Zip;
+    public $City;
+    public $State;
+    public $Country;
+    public $Organization_Phone;
+    public $OrganizationContact;
+    public $ApproversContatct;
+    public $VendorOrganizationId;
+    public $OrganizationId;
+    public $VendorOrgContactId;
+    public $VendorApproversContactId;
+    public $Status;
+    public $isActive;
+}
+
+class digicert_set_approver_method_response extends baseresponse{
+
+    public function __construct(){
+        $this->dcvDetails = new digicert_dcv_details();
+        parent::__construct();
+    }
+    public $DomainName;
+    public $preOrganizationId;
+    public $TheSSLStoreOrderID;
+    public $domain_id;
+    public $domain_status;
+    public $ValidationsTypes;
+    public $date_created;
+    public $dcvDetails;
+}
+
+class digicert_get_domain_resonse extends baseresponse{
+    public function __construct(){
+        $this->dcvDetails = new digicert_dcv_details();
+        parent::__construct();
+    }
+    public $DomainName;
+    public $domain_status;
+    public $date_created;
+    public $domain_isactive;
+    public $TheSSLStoreOrderID;
+    public $OrganizationDetails;
+    public $dcvDetails;
+    public $validations;
 }

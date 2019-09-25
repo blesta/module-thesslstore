@@ -1,67 +1,219 @@
 <?php
 	$this->Form->create();
 ?>
-<div class="panel-pad">
-    <h2><?php $this->_("ThesslstoreModule.tab_select_approver_email"); ?></h2>
-        <div class="inner">
-            <h3><?php echo $domainName; ?></h3>
-            <div class="pad">
-                <ul style='margin-left:-30px;'>
-                    <?php
-                        $this->Form-> fieldHidden("domains[0]", $domainName );
-                        $this->Form-> fieldHidden("approverEmail[0]", $approverEmail);
-                        foreach($approverEmailsListArray as $value=>$key){
-                        ?>
-                        <li style='list-style: outside none;'>
-                        <?php
-                            $checked = false;
-                            if(isset($key) && $key==$approverEmail)
-                            $checked = true;
-                            $this->Form->fieldRadio("email[0]", $key, $checked, array('id' => $domainName.$key) );
-                            $this->Form->label($key,$domainName.$key,array('class' => "inline"));
-                        ?>
-                        </li>
-                    <?php
-                    }
-                    ?>
-            	</ul>
-            </div>
-            <?php
-            $domainsCount=count($domainNames);
-            for($i=0;$i<$domainsCount;$i++)
-            {
-            	$j=$i+1;
-            ?>
-            <h3><?php echo $domainNames[$i]; ?></h3>
-            <div class="pad">
-            	<ul style='margin-left:-30px;'>
-                	<?php
-                        $this->Form-> fieldHidden("domains[$j]", $domainNames[$i] );
-                        $this->Form-> fieldHidden("approverEmail[$j]", $approverEmails[$i]);
-                        foreach($approverEmailsListArrays[$i] as $values=>$keys){
-                        ?>
-                        <li style='list-style: outside none;'>
-                        <?php
-                            $checked = false;
-                            if(isset($keys) && $keys==$approverEmails[$i])
-                            $checked = true;
-                            $this->Form->fieldRadio("email[$j]", $keys, $checked, array('id' => $domainNames[$i].$keys) );
-                            $this->Form->label($keys,$domainNames[$i].$keys,array('class' => "inline"));
-                        ?>
-                        </li>
-                   	<?php
-                    }
-                    ?>
-                </ul>
-            </div>
-            <?php
+<div class="row panel-fix">
+    <div class="tssmsg" style="margin-bottom: 20px;"></div>
+    <div class="col-md-12">
+        <?php
+        foreach($auth_domains as $auth_domain => $auth_method){
+            if($auth_method != 'HTTP' && $auth_method != 'HTTPS' && $auth_method != 'DNS'){
+                $current_method = 'EMAIL';
+            }
+            else{
+                $current_method = $auth_method;
             }
             ?>
-            <button class="btn btn-default pull-left" type="submit" name="save">
-                		<?php $this->_("ThesslstoreModule.change_approver_email.save_btn");?>
+            <div class="row form-group">
+                <div class="col-md-4">
+                    <?php
+                    $this->Form->label($auth_domain.'*', "ssl_auth_methods[".$auth_domain."]");
+                    ?>
+                </div>
+                <div class="col-md-5">
+                    <select class="form-control sslDCVMethod" id="ssl_auth_methods[<?php $this->Html->_($auth_domain); ?>]" name="ssl_auth_methods[<?php $this->Html->_($auth_domain); ?>]" data-domain="<?php $this->Html->_($auth_domain); ?>" data-current-method="<?php $this->Html->_($current_method); ?>">
+                        <option value=""><?php $this->_("ThesslstoreModule.please_select") ?></option>
+                        <optgroup label="Alternative DCV Methods"></optgroup>
+                        <?php
+                        foreach($thesslstore_auth_methods as $value => $name){
+                            $selected = ($auth_method == $value ? "selected" : "");
+                            ?>
+                            <option value="<?php $this->Html->_($value); ?>" <?php $this->Html->_($selected); ?>><?php $this->Html->_($name); ?></option>
+                            <?php
+                        }
+                        if($vendor_name != 'DIGICERT'){
+                            ?>
+                            <optgroup label="EMAILS"></optgroup>
+                            <?php
+                            $domain = str_replace("*.","", $auth_domain);
+                            $domain = str_replace("www.","", $domain);
+                            foreach($auth_domain_alias_emails[$domain] as $alias => $email){
+                                $selected = (strtolower($auth_method) == $email ? "selected" : "");
+                                ?>
+                                <option class="preemail" value="<?php $this->Html->_($email); ?>" <?php $this->Html->_($selected); ?>><?php $this->Html->_($email); ?></option>
+                                <?php
+                            }
+                            if(array_key_exists($domain,$base_domains))
+                            {
+                                 $base_domain = $base_domains[$domain];
+                                foreach($base_domain_alias_emails[$base_domain] as $alias => $email){
+                                    $selected = (strtolower($auth_method) == $email ? "selected" : "");
+                                    ?>
+                                    <option class="preemail" value="<?php $this->Html->_($email); ?>" <?php $this->Html->_($selected); ?>><?php $this->Html->_($email); ?></option>
+                                    <?php
+                                }
+                            }
+                            ?>
+                            <option class="preemail" value="repull"><strong>Retrieve Domain WHOIS Emails</strong></option>
+                            <?php
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button data-domain="<?php $this->Html->_($auth_domain); ?>" class="btn btn-default change-approver" type="button">
+                           <?php $this->_("ThesslstoreModule.tab_change_approver.button");?>
+                    </button>
+                    <?php
+                        if($current_method == 'EMAIL'){
+                            ?>
+                            <button data-domain="<?php $this->Html->_($auth_domain); ?>" class="btn btn-default resend-approver" type="button">
+                                   <?php $this->_("ThesslstoreModule.tab_resend_approver.button");?>
+                            </button>
+                            <?php
+                        }
+                    ?>
+                </div>
+            </div>
+            <?php
+        }
+        ?>
+        <div>
+            <button data-domain="<?php $this->Html->_($auth_domain); ?>" class="btn btn-default change-approver-all" type="button">
+                <?php $this->_("ThesslstoreModule.tab_change_approver_for_all.button");?>
             </button>
         </div>
+    </div>
 </div>
 <?php
 $this->Form->end();
 ?>
+<script type="text/javascript">
+	$(document).ready(function() {
+	    var vendor_name = '<?php $this->Html->_($vendor_name); ?>';
+
+		$('.sslDCVMethod').change(function () {
+            if($(this).val() == 'repull'){
+                populateDCVEmails(this);
+            }
+        });
+
+        $('button.change-approver').click(function(){
+            $('.alert').remove();
+            $('.alert').hide();
+            $('form').append($(this).blestaLoadingDialog());
+            ele = $("select[name='ssl_auth_methods["+$(this).attr('data-domain')+"]']");
+            var domain_name = $(ele).attr('data-domain');
+            var current_auth_method = $(ele).attr('data-current-method');
+            $(document).blestaRequest('POST',
+                '<?php  $this->Html->_($get_approver_email_url) ?>',
+                {'dcv_method': $(ele).val(),'domain_name': domain_name, 'current_auth_method':current_auth_method, 'ssl_token':'<?php  $this->Html->_($token) ?>','vendor_name':'<?php  $this->Html->_($vendor_name) ?>', 'action':'change_approver'},
+                function(result){
+                    if (result.is_error == true) {
+                        alert("Error: "+ result.message);
+                    }
+                    else{
+                        alert(result.message);
+                    }
+                    $(".loading_container", $('form')).remove();
+                },
+                null,
+                {dataType: 'json'}
+            );
+        });
+
+        $('button.change-approver-all').click(function(){
+            var changed = 0;
+            var errorMessage = '';
+            $('.alert').remove();
+            $('.alert').hide();
+            $('form').append($(this).blestaLoadingDialog());
+            $('select.sslDCVMethod').each(function() {
+                var dd = $(this);
+                var domain_name = dd.attr('data-domain');
+                var current_auth_method = dd.attr('data-current-method');
+                $(document).blestaRequest('POST',
+                    '<?php  $this->Html->_($get_approver_email_url) ?>',
+                    {'dcv_method': $(dd).val(),'domain_name': domain_name, 'current_auth_method':current_auth_method, 'ssl_token':'<?php  $this->Html->_($token) ?>','vendor_name':'<?php  $this->Html->_($vendor_name) ?>', 'action':'change_approver'},
+                    function(result){
+                        if (result.isError == true) {
+                            //alert("Error: "+ result.message);
+                            errorMessage = errorMessage + domain_name + '-' + result.message+'<br>';
+                        }
+                        else{
+                            //alert(result.message);
+                            $("label[for='" + dd.attr('id') + "']").append(" <span class='alert alert-success'> Changed</span>");
+                        }
+                        changed++;
+
+                        if($('select.sslDCVMethod').length == changed){
+                            if(errorMessage == ''){
+                                //success
+                                $('.tssmsg').html('<div class="alert alert-success alert-dismissable text-center"><?php $this->_("ThesslstoreModule.tab_change_approver_success_msg");?></div>');
+                            }
+                            else{
+                                //error
+                                $('.tssmsg').html('<div class="alert alert-danger alert-dismissable text-center">'+errorMessage+'</div>');
+                            }
+                            $(".loading_container", $('form')).remove();
+                        }
+                    },
+                    null,
+                    {dataType: 'json'}
+                );
+            })
+        });
+
+        $('button.resend-approver').click(function(){
+                    $('form').append($(this).blestaLoadingDialog());
+                    ele = $("select[name='ssl_auth_methods["+$(this).attr('data-domain')+"]']");
+                    var domain_name = $(ele).attr('data-domain');
+                    $(document).blestaRequest('POST',
+                        '<?php  $this->Html->_($get_approver_email_url) ?>',
+                        {'domain_name': domain_name, 'ssl_token':'<?php  $this->Html->_($token) ?>','vendor_name':'<?php  $this->Html->_($vendor_name) ?>', 'action':'resend_approver'},
+                        function(result){
+                            if (result.is_error == true){
+                                alert("Error: "+ result.message);
+                            }
+                            else{
+                                alert(result.message);
+                            }
+                            $(".loading_container", $('form')).remove();
+                        },
+                        null,
+                        {dataType: 'json'}
+                    );
+                });
+
+	});
+
+	function populateDCVEmails(element){
+        var dd = $(element);
+        $('form').append($(this).blestaLoadingDialog());
+        dd.show();
+
+        var domain_name = dd.attr('data-domain');
+
+        $(document).blestaRequest('POST',
+            '<?php  $this->Html->_($get_approver_email_url) ?>',
+            {'product_code':'<?php  $this->Html->_($product_code) ?>','domain_name': domain_name,'action':'getapproverlist'},
+            function(result) {
+
+                    if (result.is_error == false) {
+                        var htmlOptions = '';
+                        for (var i = 0; i < result.email_list.length; i++) {
+                            htmlOptions += '<option value="' + result.email_list[i] + '">' + result.email_list[i] + '</option>';
+                        }
+                        dd.children('option.preemail').remove();
+                        dd.append(htmlOptions);
+                    }
+                    else{
+                        alert(result.error_message);
+                    }
+                    $(".loading_container", $('form')).remove();
+
+            },
+            null,
+            {dataType: 'json'}
+        );
+    }
+</script>

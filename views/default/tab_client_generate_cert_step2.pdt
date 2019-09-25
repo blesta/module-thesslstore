@@ -5,29 +5,33 @@
     $this->Form->fieldHidden("thesslstore_csr", $vars->thesslstore_csr);
     $this->Form->fieldHidden("thesslstore_webserver_type", $vars->thesslstore_webserver_type);
     $this->Form->fieldHidden("thesslstore_signature_algorithm", $vars->thesslstore_signature_algorithm);
-    $this->Form->fieldHidden("thesslstore_auth_method", $vars->thesslstore_auth_method);
-    $this->Form->fieldHidden("thesslstore_admin_first_name", $vars->thesslstore_admin_first_name);
-    $this->Form->fieldHidden("thesslstore_admin_last_name", $vars->thesslstore_admin_last_name);
-    $this->Form->fieldHidden("thesslstore_admin_title", $vars->thesslstore_admin_title);
-    $this->Form->fieldHidden("thesslstore_admin_email", $vars->thesslstore_admin_email);
-    $this->Form->fieldHidden("thesslstore_admin_phone", $vars->thesslstore_admin_phone);
-    $this->Form->fieldHidden("thesslstore_org_name", $vars->thesslstore_org_name);
-    $this->Form->fieldHidden("thesslstore_org_division", $vars->thesslstore_org_division);
-    $this->Form->fieldHidden("thesslstore_admin_address1", $vars->thesslstore_admin_address1);
-    $this->Form->fieldHidden("thesslstore_admin_address2", $vars->thesslstore_admin_address2);
-    $this->Form->fieldHidden("thesslstore_admin_city", $vars->thesslstore_admin_city);
-    $this->Form->fieldHidden("thesslstore_admin_state", $vars->thesslstore_admin_state);
-    $this->Form->fieldHidden("thesslstore_admin_country", $vars->thesslstore_admin_country);
-    $this->Form->fieldHidden("thesslstore_admin_zip", $vars->thesslstore_admin_zip);
-    $this->Form->fieldHidden("thesslstore_tech_first_name", $vars->thesslstore_tech_first_name);
-    $this->Form->fieldHidden("thesslstore_tech_last_name", $vars->thesslstore_tech_last_name);
-    $this->Form->fieldHidden("thesslstore_tech_title", $vars->thesslstore_tech_title);
-    $this->Form->fieldHidden("thesslstore_tech_email", $vars->thesslstore_tech_email);
-    $this->Form->fieldHidden("thesslstore_tech_phone", $vars->thesslstore_tech_phone);
+    if($vendor_name == 'DIGICERT'){
+        $this->Form->fieldHidden("thesslstore_org_id", $vars->thesslstore_org_id);
+    }
+    else{
+        $this->Form->fieldHidden("thesslstore_admin_first_name", $vars->thesslstore_admin_first_name);
+        $this->Form->fieldHidden("thesslstore_admin_last_name", $vars->thesslstore_admin_last_name);
+        $this->Form->fieldHidden("thesslstore_admin_title", $vars->thesslstore_admin_title);
+        $this->Form->fieldHidden("thesslstore_admin_email", $vars->thesslstore_admin_email);
+        $this->Form->fieldHidden("thesslstore_admin_phone", $vars->thesslstore_admin_phone);
+        $this->Form->fieldHidden("thesslstore_org_name", $vars->thesslstore_org_name);
+        $this->Form->fieldHidden("thesslstore_org_division", $vars->thesslstore_org_division);
+        $this->Form->fieldHidden("thesslstore_admin_address1", $vars->thesslstore_admin_address1);
+        $this->Form->fieldHidden("thesslstore_admin_address2", $vars->thesslstore_admin_address2);
+        $this->Form->fieldHidden("thesslstore_admin_city", $vars->thesslstore_admin_city);
+        $this->Form->fieldHidden("thesslstore_admin_state", $vars->thesslstore_admin_state);
+        $this->Form->fieldHidden("thesslstore_admin_country", $vars->thesslstore_admin_country);
+        $this->Form->fieldHidden("thesslstore_admin_zip", $vars->thesslstore_admin_zip);
+        $this->Form->fieldHidden("thesslstore_tech_first_name", $vars->thesslstore_tech_first_name);
+        $this->Form->fieldHidden("thesslstore_tech_last_name", $vars->thesslstore_tech_last_name);
+        $this->Form->fieldHidden("thesslstore_tech_title", $vars->thesslstore_tech_title);
+        $this->Form->fieldHidden("thesslstore_tech_email", $vars->thesslstore_tech_email);
+        $this->Form->fieldHidden("thesslstore_tech_phone", $vars->thesslstore_tech_phone);
+    }
 
     //Additional SAN
-    if(isset($vars->thesslstore_additional_san)){
-        foreach($vars->thesslstore_additional_san as $additional_san){
+    if(isset($additional_sans)){
+        foreach($additional_sans as $additional_san){
             $this->Form->fieldHidden("thesslstore_additional_san[]", $additional_san);
         }
     }
@@ -35,22 +39,96 @@
 ?>
     <div class="row panel-fix">
         <div class="col-md-12">
-            <h4><?php $this->_("ThesslstoreModule.tab_generate_cert.heading_approver_email");?></h4>
+
+            <h4><?php $this->_("ThesslstoreModule.tab_generate_cert.heading_auth_method");?>*</h4>
             <?php
-            foreach($approver_email_list as $dm => $email_list){
+            if(count($auth_domains) > 1){ ?>
+                <div class="form-group">
+                    <?php
+                    foreach($thesslstore_auth_methods as $value => $name){
+                        $checked = ($value == "HTTP" ? "checked" : "");
+                        $this->Form->fieldRadio("ssl_auth_method_all", $value, $checked, array('id' => "auth_all_".$value) );
+                        $this->Form->label($name." For All Domains", "auth_all_".$value);
+                    }
+                    if($vendor_name == 'COMODO' || $vendor_name == 'SECTIGO'){
+                        $this->Form->fieldRadio("ssl_auth_method_all", "EMAIL", $checked, array('id' => "auth_all_EMAIL") );
+                        $this->Form->label("EMAIL For All Domains", "auth_all_EMAIL");
+                    }
+                    ?>
+                </div>
+
+                <div class="form-group massemail" style="display:none;">
+                    <?php
+                    $this->Form->label($this->_("ThesslstoreModule.sslstore_mass_email", true).'*', "sslstore_mass_email");
+                    $this->Form->fieldSelect("sslstore_mass_email", $this->Html->ifSet($sslstore_alias_emails), '', array('id' => "sslstore_mass_email", 'class'=>"form-control"));
+                    ?>
+                </div>
+            <?php
+            }
+            foreach($auth_domains as $auth_domain){
             ?>
-            <div class="form-group">
-                <?php
-                $this->Form->label($dm.'*', "for_".$dm);
-                $this->Form->fieldSelect("thesslstore_approver_emails[]", $this->Html->ifSet($email_list), $this->Html->ifSet($vars->thesslstore_webserver_type), array('id' => "for_".$dm, 'class'=>"form-control"));
-                ?>
-            </div>
+                <div class="row form-group">
+                    <div class="col-md-4">
+                        <?php
+                        $this->Form->label($auth_domain.'*', "for_".$auth_domain);
+                        ?>
+                    </div>
+                    <div class="col-md-8">
+                        <select class="form-control sslDCVMethod" id="ssl_auth_method" name="ssl_auth_methods[<?php $this->Html->_($auth_domain); ?>]" data-domain="<?php $this->Html->_($auth_domain); ?>">
+                            <option value=""><?php $this->_("ThesslstoreModule.please_select") ?></option>
+                            <optgroup label="Alternative DCV Methods"></optgroup>
+                            <?php
+                                foreach($thesslstore_auth_methods as $value => $name){
+                                    ?>
+                                    <option value="<?php $this->Html->_($value); ?>"><?php $this->Html->_($name); ?></option>
+                                    <?php
+                                }
+                                if($vendor_name == 'COMODO' || $vendor_name == 'SECTIGO'){
+                                    ?>
+                                    <optgroup label="EMAILS"></optgroup>
+                                    <?php
+                                    $auth_domain = str_replace("*.","", $auth_domain);
+                                    $auth_domain = str_replace("www.","", $auth_domain);
+                                    foreach($auth_domain_alias_emails[$auth_domain] as $alias => $email){
+                                        ?>
+                                        <option class="preemail" value="<?php $this->Html->_($email); ?>"><?php $this->Html->_($email); ?></option>
+                                        <?php
+                                    }
+                                    ?>
+                                    <option class="preemail" value="repull"><strong>Retrieve Domain WHOIS Emails</strong></option>
+                                    <?php
+                                }
+                            ?>
+                        </select>
+                        <?php
+                        if($is_symantec_order == 'yes'){
+                        ?>
+                            <br>
+                            <select class="form-control sslDCVMethod" name="ssl_approver_email" id="ssl_approver_email" data-domain="<?php $this->Html->_($auth_domain); ?>">
+                                <option value=""><?php $this->_("ThesslstoreModule.please_select") ?></option>
+                                <?php
+                                $auth_domain = str_replace("*.","", $auth_domain);
+                                $auth_domain = str_replace("www.","", $auth_domain);
+                                foreach($auth_domain_alias_emails[$auth_domain] as $alias => $email){
+                                    ?>
+                                    <option class="preemail" value="<?php $this->Html->_($email); ?>"><?php $this->Html->_($email); ?></option>
+                                    <?php
+                                }
+                                ?>
+                                <option class="preemail" value="repull"><strong>Retrieve Domain WHOIS Emails</strong></option>
+                            </select>
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
             <?php
             }?>
+
         </div>
     </div>
 
-    <button class="btn btn-default pull-right" type="submit">
+    <button class="btn btn-default pull-right" type="submit" onclick="ddlValidate(event);">
        <?php $this->_("ThesslstoreModule.tab_generate_cert_step1.submit");?>
     </button>
 <?php
@@ -59,8 +137,95 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
+	    var vendor_name = '<?php $this->Html->_($vendor_name); ?>';
 		//remove success message
-		$('div.alert-success').remove()
+		$('div.alert-success').remove();
+
+		$('.sslDCVMethod').change(function () {
+            if($(this).val() == 'repull'){
+                populateDCVEmails(this);
+            }
+        });
+
+        //select DCV method for all domains on page load
+        if($('[name="ssl_auth_method_all"]').val() != ''){
+            selectDCV($('[name="ssl_auth_method_all"]').val());
+        }
+
+        //select DCV method for all domains
+        $('[name="ssl_auth_method_all"]').change(function(){
+            selectDCV($(this).val());
+        });
+
+
+        $("#sslstore_mass_email").change(function(){
+            if($(this).val() != ''){
+                var items = $('.sslDCVMethod');
+                for (var i = 0; i < items.length; i++) {
+                    var domainName = $(items[i]).attr('data-domain').replace('www.','').replace('*.','');
+                    $(items[i]).val($(this).val() + domainName);
+                }
+            }else {
+                $('.sslDCVMethod').val('');
+            }
+        });
 	});
+
+    function selectDCV(element){
+        var vendor_name = '<?php $this->Html->_($vendor_name); ?>';
+        if(vendor_name != 'DIGICERT' && element=='EMAIL'){
+            $(".massemail").show();
+            $('.sslDCVMethod').val('');
+        }else {
+            $(".massemail").hide();
+            $("#sslstore_mass_email").val('');
+            $('.sslDCVMethod').val(element);
+        }
+    }
+
+	function populateDCVEmails(element){
+        var dd = $(element);
+        $('form').append($(this).blestaLoadingDialog());
+        dd.show();
+
+        var domain_name = dd.attr('data-domain');
+
+        $(document).blestaRequest('POST',
+            '<?php  $this->Html->_($get_approver_email_url) ?>',
+            {'product_code':'<?php  $this->Html->_($product_code) ?>','domain_name': domain_name,'action':'getapproverlist'},
+            function(result) {
+
+                    if (result.is_error == false) {
+                        var htmlOptions = '';
+                        for (var i = 0; i < result.email_list.length; i++) {
+                            htmlOptions += '<option value="' + result.email_list[i] + '">' + result.email_list[i] + '</option>';
+                        }
+                        dd.children('option.preemail').remove();
+                        dd.append(htmlOptions);
+                    }
+                    else{
+                        alert(result.error_message);
+                    }
+                    $(".loading_container", $('form')).remove();
+
+            },
+            null,
+            {dataType: 'json'}
+        );
+    }
+
+    function ddlValidate() {
+        if (document.getElementById("ssl_auth_method").options[document.getElementById("ssl_auth_method").selectedIndex].value == 0) {
+            alert("Please select a DCV method");
+            event.preventDefault();
+            return false;
+        }
+        if (document.getElementById("ssl_approver_email").options[document.getElementById("ssl_approver_email").selectedIndex].value == 0) {
+            alert("Please select a Approver Email");
+            event.preventDefault();
+            return false;
+        }
+        return true;
+    }
 </script>
 
