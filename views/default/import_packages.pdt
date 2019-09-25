@@ -1,75 +1,315 @@
-		<?php
-		if(isset($_REQUEST['error']) && $_REQUEST['error']=='false')
-		{
-		?>
-		    <section class="error_section">
-        		<article class="error_box">
-                    <a class="close" href="#">&times;</a>
-                    <p><?php echo $_REQUEST['count'];?> <?php $this->_("ThesslstoreModule.!success.import_package_success");?></p>
-        			</article>
-        	</section>
-		<?php
-		}
-		if(isset($_REQUEST['error']) && $_REQUEST['error']=='true')
-        {
-        ?>
-            <section class="error_section">
-                <article class="error_box error">
-                    <a class="close" href="#">&times;</a>
-                    <p><?php $this->_("ThesslstoreModule.!error.import_package_error");?></p>
-                </article>
-            </section>
-        <?php
-        }
-		echo $this->Html->ifSet($message);
-
-		$this->Widget->clear();
-		$this->Widget->create($this->_("ThesslstoreModule.add_row.box_title", true));
-
-		$this->Form->create();
-		?>
-		<div class="inner">
-			<div class="title_row first">
-				<h3><?php $this->_("ThesslstoreModule.add_row.import_packages");?></h3>
-			</div>
-			<?php
-			if($vars->packageGroupsArray=='false')
-			{
-			?>
-				<div class="error_box error"><?php $this->_("ThesslstoreModule.!error.empty_package_group");?></div>
+<?php
+   if(isset($_REQUEST['error']) && $_REQUEST['error']=='false')
+   {
+   ?>
+<section class="error_section">
+   <article class="error_box">
+      <a class="close" href="#">&times;</a>
+      <p><?php echo $_REQUEST['count'];?> <?php $this->_("ThesslstoreModule.!success.import_package_success");?></p>
+   </article>
+</section>
+<?php
+   }
+   if(isset($_REQUEST['error']) && $_REQUEST['error']=='true')
+         {
+         ?>
+<section class="error_section">
+   <article class="error_box error">
+      <a class="close" href="#">&times;</a>
+      <p><?php $this->_("ThesslstoreModule.!error.import_package_error");?></p>
+   </article>
+</section>
+<?php
+   }
+   echo $this->Html->ifSet($message);
+   
+   $this->Widget->clear();
+   $this->Widget->create($this->_("ThesslstoreModule.add_row.box_title", true));
+   
+   $this->Form->create($uri = null, $attributes = array('id' => "frmImport"));
+   ?>
+<div class="inner">
+   <div class="title_row first">
+      <h3><?php $this->_("ThesslstoreModule.add_row.import_packages");?></h3>
+   </div>
+   <?php
+      if($vars->packageGroupsArray=='false')
+      {
+      ?>
+   <div class="error_box error"><?php $this->_("ThesslstoreModule.!error.empty_package_group");?></div>
+   <?php
+      }
+      else
+      {
+          if($vars->currenciesArray=='false')
+      	{
+      	?>
+   <div class="error_box error"><?php $this->_("ThesslstoreModule.!error.empty_currency_array");?></div>
+   <?php
+      }
+      else
+      {
+      ?>
+   <div class="pad">
+      <ul>
+         <li>
             <?php
-            }
-            else
+               $this->Form->fieldRadio("import_package_mode", "with_percentage", true, array('id' => "import_package_mode_percentage") );
+               $this->Form->label($this->_("ThesslstoreModule.row_meta.import_package_with_percentage", true), "import_package_mode_percentage", array('class' => "inline"));
+               ?>
+         </li>
+         <li>
+            <?php
+               $this->Form->fieldRadio("import_package_mode", "with_price", false, array('id' => "import_package_mode_price") );
+               $this->Form->label($this->_("ThesslstoreModule.row_meta.import_package_with_price", true), "import_package_mode_price", array('class' => "inline"));
+               ?>
+         </li>
+         <li>
+            <?php
+               $this->Form->label($this->_("ThesslstoreModule.row_meta.product_group", true), "product_group");
+               $this->Form->fieldSelect("product_group",$vars->packageGroups, $this->Html->ifSet($vars->product_group), array('id' => "product_group"));
+               ?>
+         </li>
+         <li>
+            <?php
+               $this->Form->label($this->_("ThesslstoreModule.row_meta.currency_code", true), "currency_code");
+               $this->Form->fieldSelect("currency_code",$vars->currencies, $this->Html->ifSet($vars->defaultCurrency), array('id' => "currency_code"));
+               ?>
+         </li>
+         <li id="prfmargin">
+            <?php
+               $this->Form->label($this->_("ThesslstoreModule.row_meta.profit_margin", true), "profit_margin");
+               $this->Form->fieldText("profit_margin", $this->Html->ifSet($vars->profit_margin), array('id' => "profit_margin"));
+               ?>
+            <span><?php $this->_("ThesslstoreModule.row_meta.profit_margin_info");?></span>
+         </li>
+         <div class="note">
+            <p><strong>Note:-</strong>The price of all the products will be setup base on the <strong>"Base Conv. Rate"</strong> of the selected Currency Code and <strong><?php echo $vars->apiCurrencyCode; ?></strong> Currency Code. So please make sure that you have set up the correct <strong>"Base Conv. Rate"</strong> for each currency. (The default price of all the products from TheSSLStore API is in <strong><?php echo $vars->apiCurrencyCode; ?></strong>.)</p>
+         </div>
+      </ul>
+   </div>
+   <div class="links_row">
+   <button class="btn btn-primary pull-right submit btn-sm"  type="submit" onclick="ddlValidate(event);">
+                    <?php $this->_("ThesslstoreModule.import_packages_row.add_btn");?>
+             </button>
+                   </div>
+   <div class="pricingtable pricingdetail">
+      <table class="table">
+         <thead>
+             <tr class="heading_row">
+                <td>No</td>
+                <td><label for="prd_select_all"> Select All</label><input type="checkbox" <?php echo ((empty($posted_products) || $select_all == 'yes') ? 'checked="checked"' : ''); ?> name="prd_select_all" id="prd_select_all" value="yes"></td>
+                <td>Product Name</td>
+                <td>Brand Name</td>
+                <td>Validation Type</td>
+             </tr>
+         </thead>
+         <?php
+            $odd = false;
+            foreach($vars->products as $product)
             {
-            ?>
-            <div class="pad">
-            	<ul>
-					<li>
-					<?php
-                    	$this->Form->label($this->_("ThesslstoreModule.row_meta.product_group", true), "product_group");
-                        $this->Form->fieldSelect("product_group",$vars->packageGroups, $this->Html->ifSet($vars->product_group), array('id' => "product_group"));
-                    ?>
-					</li>
-					<li>
+                if($odd == true){
+                    $odd_row = 'odd_row';
+                    $odd = false;
+                }
+                elseif($odd == false){
+                    $odd_row = '';
+                    $odd = true;
+                }
+                $checked = '';
+                $billingCycleLabels = array(1 => 'Monthly', 3 => 'Quarterly', 6 => 'Semi-Annually', 12 => 'Annually', 24 => 'Biennially', 36=> 'Triennially');
+                $isSupportedBillingCycle = false;
+                foreach($product->PricingInfo as $pricing_info){
+                    if(isset($billingCycleLabels[$pricing_info->NumberOfMonths])){
+                          $isSupportedBillingCycle = true;
+                    }
+                }
+                if(empty($posted_products) || in_array($product->ProductCode, $posted_products)){
+                    $checked = 'checked="checked"';
+                }
+                if($isSupportedBillingCycle) {
+                   $i++;
+                   ?>
+                 <tr class="price_row <?php echo $odd_row; ?>">
+                    <td class="small"><?php echo $i; ?></td>
+                    <td class="small">
+                       <?php
+                          if(in_array($product->ProductCode, $vars->existingProducts)){?>
+                       <a target="_blank" href="<?php echo $vars->product_edit_url.array_search($product->ProductCode,$vars->existingProducts,true)?>">Edit</a>
+                       <?php
+                          }
+                          else{
+                          ?>
+                       <input class="pcode <?php echo "chk_" . $product->ProductCode ?>"
+                          type="checkbox" <?php echo $checked; ?> name="products[]"
+                          value="<?php echo $product->ProductCode; ?>">
+                    </td>
                     <?php
-                        $this->Form->label($this->_("ThesslstoreModule.row_meta.profit_margin", true), "profit_margin");
-                       	$this->Form->fieldText("profit_margin", $this->Html->ifSet($vars->profit_margin), array('id' => "profit_margin"));
-                    ?>
-                    </li>
-					<li>
-						<span>% Margin will apply to the price of all the products. You can change it later on from the price setup menu.</span>
-					</li>
-				</ul>
-			</div>
-				<div class="button_row"><a class="pull-right btn btn-primary submit" href="#"><?php $this->_("ThesslstoreModule.import_packages_row.add_btn");?></a></div>
-            <?php
-            }
-            ?>
-			</div>
-			<?php
-			$this->Form->end();
-			?>
-		</div>
-		<?php
-		$this->Widget->end();
-		?>
+                       }
+                       ?>
+                    <td class="large">
+                       <?php
+                          echo $product->ProductName . ' (' . $product->ProductCode . ')';
+                          if(!in_array($product->ProductCode, $vars->existingProducts)){
+                              ?>
+                       <table class="table priceinfo">
+                          <thead>
+                                       <tr class="heading_row">
+                                     <td>Months</td>
+                                     <td>Price</td>
+                                     <td>Additional SAN</td>
+                                     <td>Additional Server</td>
+                                     </tr>
+                          </thead>
+                          <?php
+                             if($product->ProductCode == 'freessl'){
+                                 echo '<tr class="price_row">';
+                                 echo '<td class="small">1</td>';
+                                 echo '<td class="medium"><input class="inpprice term" type="text" name="' . $product->ProductCode . '_1' . '"><span class="resellerprice"></span></td>';
+                                 echo(($product->MaxSan - $product->MinSan - 1) > 0 ? '<td class="medium"><input type="text" class="inpprice term" name="' . $product->ProductCode . '_' . $pricing_info->NumberOfMonths . '_san"><span class="resellerprice"></span></td>' : '<td>-</td>');
+                                 echo(($product->isNoOfServerFree == false && $product->isCodeSigning == false && $product->isScanProduct == false) ? '<td class="medium"><input type="text" class="inpprice term" name="' . $product->ProductCode . '_' . $pricing_info->NumberOfMonths . '_server"><span class="resellerprice"></span></td>' : '<td>-</td>');
+                                 echo '</tr>';
+                             } else{
+                                 $odd_new = false;
+                                 foreach($product->PricingInfo as $pricing_info){
+                                     if($odd_new == true){
+                                        $odd_row_new = 'odd_row';
+                                        $odd_new = false;
+                                     }
+                                     elseif($odd_new == false){
+                                        $odd_row_new = '';
+                                        $odd_new = true;
+                                     }
+                                     if(isset($billingCycleLabels[$pricing_info->NumberOfMonths])){
+                                         echo '<tr class="price_row ' . $odd_row_new .'">';
+                                         echo '<td class="small">' . $pricing_info->NumberOfMonths . '</td>';
+                                         echo '<td class="medium"><input class="inpprice term" type="text" name="' . $product->ProductCode . '_' . $pricing_info->NumberOfMonths . '" value="' . (isset($_POST[$product->ProductCode . '_' . $pricing_info->NumberOfMonths]) ? $_POST[$product->ProductCode . '_' . $pricing_info->NumberOfMonths] : '') . '"><span class="resellerprice"></span></td>';
+                                         echo((strtoupper($product->VendorName) != 'CWATCH' && ($product->MaxSan - $product->MinSan - 1) > 0) ? '<td class="medium"><input type="text" class="inpprice term" name="' . $product->ProductCode . '_' . $pricing_info->NumberOfMonths . '_san" value="' . (isset($_POST[$product->ProductCode . '_' . $pricing_info->NumberOfMonths . '_san']) ? $_POST[$product->ProductCode . '_' . $pricing_info->NumberOfMonths . '_san'] : '') . '"><span class="resellerprice"></span></td>' : '<td>-</td>');
+                                         echo((strtoupper($product->VendorName) != 'CWATCH' && $product->isNoOfServerFree == false && $product->isCodeSigning == false && $product->isScanProduct == false) ? '<td class="medium"><input type="text" class="inpprice term" name="' . $product->ProductCode . '_' . $pricing_info->NumberOfMonths . '_server" value="' . (isset($_POST[$product->ProductCode . '_' . $pricing_info->NumberOfMonths . '_server']) ? $_POST[$product->ProductCode . '_' . $pricing_info->NumberOfMonths . '_server'] : '') . '"><span class="resellerprice"></span></td>' : '<td>-</td>');
+                                         echo '</tr>';
+                                     }
+                                 }
+                             }
+                             ?>
+                       </table>
+                       <?php
+                          }
+                          ?>
+                    </td>
+                    <td class="medium"><?php echo ($product->VendorName == 'CPAC' || $product->VendorName == 'WEB INSPECTOR') ? 'COMODO' : $product->VendorName; ?></td>
+                    <td class="small"><?php echo(($product->isDVProduct) ? 'DV' : (($product->isOVProduct) ? 'OV' : (($product->isEVProduct) ? 'EV' : '-'))); ?></td>
+                 </tr>
+             <?php
+                }
+                }
+                ?>
+      </table>
+      <div class="ajax_loader" style="position:fixed;
+                                          width:100%;
+                                          height:100%;
+                                          left:0;
+                                          top:0;
+                                          background:rgba(0,0,0,.5);
+                                          display: none;"><img src="/components/modules/thesslstore_module/views/default/images/icon_loading.gif" style="position:absolute;
+                                                                                                                                                             left:50%;
+                                                                                                                                                             top:50%;
+                                                                                                                                                             margin: -100px 0 0 -100px;"></div>
+   </div>
+   <div class="links_row button_row">
+   <button class="btn btn-primary submit pull-right btn-sm price_row_add"  type="submit" onclick="ddlValidate(event);">
+                 <?php $this->_("ThesslstoreModule.import_packages_row.add_btn");?>
+          </button>
+
+                      </div>
+   <?php
+      }
+      }
+      ?>
+</div>
+<?php
+   $this->Form->end();
+   ?>
+</div>
+<?php
+   $this->Widget->end();
+   ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+<script type="text/javascript">
+   $('document').ready(function(){
+       //checked and unchecked based on "select all"
+      $('input[name="prd_select_all"]').click(function(){
+          $('input.pcode').prop('checked', this.checked);
+      })
+   
+      //unchecked "select all" if unchecked any checkbox
+      $('input.pcode').click(function(){
+          if($('input.pcode:checked').length == $('input.pcode').length){
+              $('input[name="prd_select_all"]').prop('checked', true);
+          }
+          else{
+              $('input[name="prd_select_all"]').prop('checked', false);
+          }
+      })
+
+       //show hide based on product import type selection
+       $('input[name="import_package_mode"]').change(function(){
+           manageImportOption();
+       })
+   
+       //change price based on currency selection
+       $("select[name='currency_code']").change(function(){
+           fillResellerPrice();
+       })
+       manageImportOption();
+       fillResellerPrice();
+   })
+
+   function manageImportOption(){
+       if($('input[name="import_package_mode"]:checked').val() == 'with_price'){
+           $('li#prfmargin').hide();
+           $('table.priceinfo').show();
+       }
+       else{
+           $('li#prfmargin').show();
+           $('table.priceinfo').hide();
+       }
+   }
+
+   function fillResellerPrice(){
+       $.ajax({
+        url: '',
+        type: 'POST',
+        dataType: 'json',
+        data: {selectedCurrencyId: $("select[name='currency_code']").val(),apiCurrencyRate: <?php echo $vars->api_currency_rate; ?>,'action':'getResellerPrice'},
+        beforeSend: function(){
+            // Show image container
+            $('.ajax_loader').show();
+        },
+        success: function(data){
+            $.each(data.pricing, function(key, price) {
+                $("input[name='"+key+"'].inpprice").val(price);
+                $("input[name='"+key+"']").siblings('span.resellerprice').html("Your Price: "+data.prefix+""+price+" ");
+            });
+        },
+        complete:function(result){
+            $('.ajax_loader').hide();
+        },
+        error: function(){}
+      });
+   }
+
+   function ddlValidate() {
+           if ($('input[name="import_package_mode"]:checked').val() == 'with_percentage')
+           {
+               var profit_margin = document.getElementById("profit_margin").value;
+               if (profit_margin == '' || isNaN(profit_margin) ) {
+                       alert("Please enter a valid Profit Margin");
+                       document.getElementById("profit_margin").focus();
+                       event.preventDefault();
+                       return false;
+               }
+           }
+           return true;
+       }
+</script>
+

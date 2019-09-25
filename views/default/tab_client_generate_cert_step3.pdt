@@ -1,32 +1,71 @@
 <div class="row panel-fix">
     <div class="col-md-12">
         <h4><?php $this->_("ThesslstoreModule.tab_generate_cert.heading_step3");?></h4>
-        <?php
-        if($auth_file_name == ''){?>
-            <p>
-                Your SSL certificate generation process has now been completed and sent to the
-                Certificate Authority for validation . You should receive an email from them shortly to approve it .
-            </p>
-        <?php
-        } else{ ?>
-	    <p>
-                For File Based Authentication, Please create a folder structure "/.well-known/pki-validation/" under root directory and create file using following details or download the Authentication file by clicking the "Download Auth File" button and place it in the "/.well-known/pki-validation/" of the HTTP server, like so: http://www.example.com/.well-known/pki-validation/<?php $this->Html->_($auth_file_name); ?> It may take some time for file to be automatically validated and cert to be issued by Certificate Authority.
-            </p>
-            <p>
-                File Name: <?php $this->Html->_($auth_file_name); ?>
-            </p>
-            <p>
-                File Content: <?php $this->Html->_($auth_file_content); ?>
-            </p>
-            <p>
-                <a href="<?php $this->Html->_($download_auth_file_link); ?>" class="btn btn-default btn-xs" type="button">
-                    <?php $this->_("ThesslstoreModule.tab_DownloadAuthFile");?>
-                </a>
-            </p>
-		<?php
-	}
-    ?>
+        <p>
+           <?php $this->_("ThesslstoreModule.tab_client_cert_details.cert_completed_details"); ?>
+        </p>
     </div>
+
+
+    <div class="col-md-12 table-responsive">
+        <h4><?php $this->_("ThesslstoreModule.tab_client_cert_details.auth_details"); ?></h4>
+        <table class="table table-curved">
+            <tbody>
+            <?php
+            foreach($auth_details as $domain_name => $auth_detail){
+                ?>
+                <tr style="background-color: #f9f9f9;">
+                    <td><strong><?php $this->Html->_($domain_name); ?></strong></td>
+                    <td><strong><?php $this->Html->_($auth_detail['method']); ?></strong></td>
+                    <td><strong><?php $this->Html->_($auth_detail['dcv_status']); ?></strong></td>
+                </tr>
+                <?php
+                if($auth_detail['method'] == 'FILE'){
+                    ?>
+                    <tr>
+                        <td>File Name:</td>
+                        <td colspan="2" style="word-break: break-all;"><?php $this->Html->_($auth_detail['file_url']); ?></td>
+                    </tr>
+                    <tr>
+                        <td>File Content:</td>
+                        <td colspan="2" style="word-break: break-all;"><?php echo nl2br($auth_detail['file_content']); ?></td>
+                    </tr>
+                    <?php
+                }
+                elseif($auth_detail['method'] == 'CNAME'){
+                    ?>
+                    <tr>
+                        <td>Host/Alias:</td>
+                        <td colspan="2" style="word-break: break-all;"><?php $this->Html->_($auth_detail['alias']); ?></td>
+                    </tr>
+                    <tr>
+                        <td>value:</td>
+                        <td colspan="2" style="word-break: break-all;"><?php $this->Html->_($auth_detail['point_to']); ?></td>
+                    </tr>
+                    <?php
+                }
+                elseif($auth_detail['method'] == 'DNS'){
+                    ?>
+                    <tr>
+                        <td>value:</td>
+                        <td colspan="2" style="word-break: break-all;"><?php $this->Html->_($auth_detail['point_to']); ?></td>
+                    </tr>
+                    <?php
+                }
+                elseif($auth_detail['method'] == 'EMAIL'){
+                    ?>
+                    <tr>
+                        <td>Email:</td>
+                        <td colspan="2"><?php $this->Html->_($auth_detail['email']); ?></td>
+                    </tr>
+                    <?php
+                }
+            }
+            ?>
+            </tbody>
+        </table>
+    </div>
+
 </div>
 <script type="text/javascript">
 	$(document).ready(function() {

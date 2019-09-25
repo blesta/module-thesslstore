@@ -1,0 +1,234 @@
+		<?php
+		if(isset($_REQUEST['msg']) && $_REQUEST['msg']=='success'){ ?>
+                <section class="error_section">
+                    <article class="error_box">
+                        <a class="close" href="#">&times;</a>
+                        <p> <?php $this->_("ThesslstoreModule.additional_settings.update_success");?></p>
+                        </article>
+
+                </section>
+        <?php
+        }
+		$this->Widget->clear();
+		$this->Widget->create($this->_("ThesslstoreModule.additional_settings.box_title", true));
+		?>
+		<div class="inner">
+			<?php
+			$this->Form->create();
+			$this->Form->fieldHidden( 'module_row_id', $this->Html->ifSet($techVars->module_row_id) )
+			?>
+			<div class="title_row first">
+				<h3><?php $this->_("ThesslstoreModule.additional_settings.tech_info");?></h3>
+			</div>
+			<div class="pad">
+				<ul>
+                    <li>
+                        <?php
+                        $this->Form->fieldCheckbox("use_default_tech_details", "yes",$this->Html->ifSet($vars->use_default_tech_details) == "yes", array('id' => 'use_default_tech_details') );
+                        $this->Form->label( $this->_("ThesslstoreModule.row_meta.default_tech_details", true), 'use_default_tech_details',array('class' => "inline") );
+                        ?>
+                    </li>
+				    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.default_tech_job_title", true), "thesslstore_tech_job_title");
+                        $this->Form->fieldText("thesslstore_tech_job_title", $this->Html->ifSet($vars->thesslstore_tech_job_title), array('id' => "thesslstore_tech_job_title"));
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.default_tech_first_name", true), "thesslstore_tech_first_name");
+                        $this->Form->fieldText("thesslstore_tech_first_name", $this->Html->ifSet($vars->thesslstore_tech_first_name), array('id' => "thesslstore_tech_first_name"));
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.default_tech_last_name", true), "thesslstore_tech_last_name");
+                        $this->Form->fieldText("thesslstore_tech_last_name", $this->Html->ifSet($vars->thesslstore_tech_last_name), array('id' => "thesslstore_tech_last_name"));
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.default_tech_organization_name", true), "thesslstore_tech_org_name");
+                        $this->Form->fieldText("thesslstore_tech_org_name", $this->Html->ifSet($vars->thesslstore_tech_org_name), array('id' => "thesslstore_tech_org_name"));
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.default_tech_address", true), "thesslstore_tech_address");
+                        $this->Form->fieldText("thesslstore_tech_address", $this->Html->ifSet($vars->thesslstore_tech_address), array('id' => "thesslstore_tech_address"));
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.default_tech_phone_number", true), "thesslstore_tech_phone");
+                        $this->Form->fieldText("thesslstore_tech_phone", $this->Html->ifSet($vars->thesslstore_tech_phone), array('id' => "thesslstore_tech_phone"));
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.default_tech_email_address", true), "thesslstore_tech_email");
+                        $this->Form->fieldText("thesslstore_tech_email", $this->Html->ifSet($vars->thesslstore_tech_email), array('id' => "thesslstore_tech_email"));
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.default_tech_city", true), "thesslstore_tech_city");
+                        $this->Form->fieldText("thesslstore_tech_city", $this->Html->ifSet($vars->thesslstore_tech_city), array('id' => "thesslstore_tech_city"));
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.default_tech_state", true), "thesslstore_tech_state");
+                        $this->Form->fieldText("thesslstore_tech_state", $this->Html->ifSet($vars->thesslstore_tech_state), array('id' => "thesslstore_tech_state"));
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.default_tech_country", true), "thesslstore_tech_country");
+                        $this->Form->fieldSelect("thesslstore_tech_country", $this->Html->ifSet($thesslstore_countries), $this->Html->ifSet($vars->thesslstore_tech_country), array('id' => "thesslstore_tech_country"));
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.default_tech_zip_code", true), "thesslstore_tech_zipcode");
+                        $this->Form->fieldText("thesslstore_tech_zipcode", $this->Html->ifSet($vars->thesslstore_tech_zipcode), array('id' => "thesslstore_tech_zipcode"));
+                        ?>
+                    </li>
+				</ul>
+			</div>
+            <div class="title_row">
+				<h3><?php $this->_("ThesslstoreModule.additional_settings.other_settings");?></h3>
+			</div>
+			<div class="pad">
+				<ul>
+				    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.additionaldays_for_new_order", true), "additional_days_for_neworder");
+                        $this->Form->fieldText("additional_days_for_neworder", $this->Html->ifSet($vars->additional_days_for_neworder), array('id' => "additional_days_for_neworder"));
+                        ?>
+                    </li>
+                    <li>
+                        <?php
+                        $this->Form->label($this->_("ThesslstoreModule.row_meta.additionaldays_for_renew_order", true), "additional_days_for_reneworder");
+                        $this->Form->fieldText("additional_days_for_reneworder", $this->Html->ifSet($vars->additional_days_for_reneworder), array('id' => "additional_days_for_reneworder"));
+                        ?>
+                    </li>
+				</ul>
+			</div>
+			<div class="links_row"><a class="btn btn-primary submit additional-settings-submit" href="#"><?php $this->_("ThesslstoreModule.credential_row.add_btn");?></a></div>
+			<?php
+			$this->Form->end();
+			?>
+		</div>
+		<?php
+		$this->Widget->end();
+		?>
+
+		<script type="text/javascript">
+        $(document).ready(function() {
+            $(".additional-settings-submit").click(
+                function(){
+                    // Get the checkbox
+                    var checkBox = document.getElementById("use_default_tech_details");
+                    if (checkBox.checked == true) {
+                        if (document.getElementById("thesslstore_tech_job_title").value == '') {
+                            alert("Please enter a Job Title");
+                            document.getElementById("thesslstore_tech_job_title").focus();
+                            event.preventDefault();
+                            return false;
+                        }
+                        if (document.getElementById("thesslstore_tech_first_name").value == '') {
+                            alert("Please enter a First Name");
+                            document.getElementById("thesslstore_tech_first_name").focus();
+                            event.preventDefault();
+                            return false;
+                        }
+                        if (document.getElementById("thesslstore_tech_last_name").value == '') {
+                            alert("Please enter a Last Name");
+                            document.getElementById("thesslstore_tech_last_name").focus();
+                            event.preventDefault();
+                            return false;
+                        }
+                        if (document.getElementById("thesslstore_tech_org_name").value == '') {
+                            alert("Please enter a Organization Name");
+                            document.getElementById("thesslstore_tech_org_name").focus();
+                            event.preventDefault();
+                            return false;
+                        }
+                        if (document.getElementById("thesslstore_tech_address").value == '') {
+                            alert("Please enter a Address");
+                            document.getElementById("thesslstore_tech_address").focus();
+                            event.preventDefault();
+                            return false;
+                        }
+                        if (document.getElementById("thesslstore_tech_phone").value == '') {
+                            alert("Please enter a Phone Number");
+                            document.getElementById("thesslstore_tech_phone").focus();
+                            event.preventDefault();
+                            return false;
+                        }
+                        if (document.getElementById("thesslstore_tech_email").value == '') {
+                            alert("Please enter a Email Address");
+                            document.getElementById("thesslstore_tech_email").focus();
+                            event.preventDefault();
+                            return false;
+                        }
+                        if (document.getElementById("thesslstore_tech_city").value == '') {
+                            alert("Please enter a City");
+                            document.getElementById("thesslstore_tech_city").focus();
+                            event.preventDefault();
+                            return false;
+                        }
+                        if (document.getElementById("thesslstore_tech_state").value == '') {
+                            alert("Please enter a State");
+                            document.getElementById("thesslstore_tech_state").focus();
+                            event.preventDefault();
+                            return false;
+                        }
+                        if (document.getElementById("thesslstore_tech_country").value == '') {
+                            alert("Please select a Country");
+                            document.getElementById("thesslstore_tech_country").focus();
+                            event.preventDefault();
+                            return false;
+                        }
+                        if (document.getElementById("thesslstore_tech_zipcode").value == '') {
+                            alert("Please enter a Zip code");
+                            document.getElementById("thesslstore_tech_zipcode").focus();
+                            event.preventDefault();
+                            return false;
+                        }
+                    }
+                    if (document.getElementById("additional_days_for_neworder").value == '') {
+                        alert("Please enter a Additional Days for New Order");
+                        document.getElementById("additional_days_for_neworder").focus();
+                        event.preventDefault();
+                        return false;
+                    }
+                    var x = document.getElementById("additional_days_for_neworder").value;
+                    // If x is Not a Number or less than zero or greater than 90
+                    if (isNaN(x) || x < 0 || x > 90) {
+                        alert("Please enter the valid number of days (0-90 days)");
+                        document.getElementById("additional_days_for_neworder").focus();
+                        event.preventDefault();
+                        return false;
+                    }
+
+                    if (document.getElementById("additional_days_for_reneworder").value == '') {
+                        alert("Please enter a a Additional Days for Renew Order");
+                        document.getElementById("additional_days_for_reneworder").focus();
+                        event.preventDefault();
+                        return false;
+                    }
+                    var y = document.getElementById("additional_days_for_reneworder").value;
+                    // If x is Not a Number or less than zero or greater than 90
+                    if (isNaN(y) || y < 0 || y > 90) {
+                        alert("Please enter the valid number of days (0-90 days)");
+                        document.getElementById("additional_days_for_reneworder").focus();
+                        event.preventDefault();
+                        return false;
+                    }
+                return true;
+                }
+            );
+        });
+        </script>

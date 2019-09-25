@@ -1,21 +1,23 @@
 <?php
 if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
-//This message is displayed when user change approver email successfully from "change approver email" tab
+    //This message is displayed when user change approver email successfully from "change approver email" tab
+    ?>
+    <section class="error_section">
+        <article class="error_box">
+            <div class="alert alert-success alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <p> <?php $this->_("ThesslstoreModule.success.change_approver_email"); ?> </p>
+            </div>
+        </article>
+    </section>
+    <?php
+}
 ?>
-<section class="error_section">
-    <article class="error_box">
-        <div class="alert alert-success alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            <p> <?php $this->_("ThesslstoreModule.success.change_approver_email"); ?> </p>
-        </div>
-    </article>
-</section>
-<?php
-} ?>
 <div class="panel-pad">
     <h3><?php $this->_("ThesslstoreModule.tab_client_cert_details"); ?> </h3>
     <?php
-    if($certificate->order_status == 'Initial'){?>
+    if($certificate->order_status == 'INITIAL'){
+        ?>
         <div class="row">
             <div class="col-md-3 service-info">
                 <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.order_status"); ?></label>
@@ -23,7 +25,7 @@ if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
             <div class="col-md-9 service-info">
                 <h4>
                     <?php $this->Html->_($certificate->order_status); ?>
-                    <a target="_blank" href="<?php $this->Html->_($certificate->generation_link); ?>" class="btn btn-success btn-xs" type="button"><?php $this->_("ThesslstoreModule.tab_GenerateCert"); ?></a>
+                    <a target="<?php $this->Html->_($link_target);  ?>" href="<?php $this->Html->_($certificate->generation_link); ?>" class="btn btn-success btn-xs" type="button"><?php $this->_("ThesslstoreModule.tab_GenerateCert"); ?></a>
                 </h4>
             </div>
 
@@ -33,12 +35,12 @@ if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
             <div class="col-md-9 service-info">
                 <h4>
                     <?php $this->Html->_($certificate->store_order_id);
-                    if($certificate->renew_from != ''){ ?>
+                    if($certificate->renew_from != ''){
+                        ?>
                         (<?php $this->_("ThesslstoreModule.tab_client_cert_details.renew_from") ?>: <?php $this->Html->_($certificate->renew_from); ?> )
-                    <?php
+                        <?php
                     }
                     ?>
-
                 </h4>
             </div>
 
@@ -49,9 +51,10 @@ if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
                 <h4><?php $this->Html->_($certificate->token); ?></h4>
             </div>
         </div>
-    <?php
+        <?php
     }
-    else{ ?>
+    else{
+        ?>
         <div class="row">
             <div class="col-md-3 service-info">
                 <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.order_status"); ?></label>
@@ -72,9 +75,10 @@ if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
             </div>
             <div class="col-md-9 service-info">
                 <h4><?php $this->Html->_($certificate->store_order_id);
-                    if($certificate->renew_from != ''){ ?>
+                    if($certificate->renew_from != ''){
+                        ?>
                         (<?php $this->_("ThesslstoreModule.tab_client_cert_details.renew_from") ?>: <?php $this->Html->_($certificate->renew_from); ?> )
-                    <?php
+                        <?php
                     }
                 ?>
                 </h4>
@@ -92,10 +96,20 @@ if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
             </div>
             <div class="col-md-9 service-info">
                 <h4><?php $this->Html->_($certificate->vendor_status); ?></h4>
-                <?php if(!empty($replacementdetails )){ ?>
-                <label><?php $this->Html->_($replacementdetails); ?></label>
-                <?php } ?>
             </div>
+
+            <?php
+            if($certificate->vendor_name == 'DIGICERT'){
+                ?>
+                 <div class="col-md-3 service-info">
+                    <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.org_name"); ?></label>
+                </div>
+                <div class="col-md-9 service-info">
+                    <h4><?php $this->Html->_($certificate->org_name); ?> (#<?php $this->Html->_($certificate->org_id); ?>)</h4>
+                </div>
+                <?php
+            }
+            ?>
 
             <div class="col-md-3 service-info">
                 <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.token"); ?></label>
@@ -126,7 +140,8 @@ if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
                 <h4><?php $this->Html->_($certificate->additional_domains);?></h4>
             </div>
             <?php
-            if($certificate->verification_type == 'email'){ ?>
+            if($certificate->vendor_name == 'SYMANTEC' || $certificate->vendor_name == 'RAPIDSSL' || $certificate->vendor_name == 'GEOTRUST' || $certificate->vendor_name == 'THAWTE'){
+                ?>
                 <div class="col-md-3 service-info">
                     <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.verification_email"); ?></label>
                 </div>
@@ -136,7 +151,9 @@ if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
 
                 <?php
             }
-            if($certificate->siteseal_url != 'NA'){ ?>
+
+            if($certificate->siteseal_url != 'NA'){
+                ?>
                 <div class="col-md-3 service-info">
                     <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.siteseal_url"); ?></label>
                 </div>
@@ -147,7 +164,9 @@ if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
                         </a>
                     </h4>
                 </div>
-            <?php } ?>
+                <?php
+            }
+            ?>
         </div>
 
         <h3><?php $this->_("ThesslstoreModule.tab_client_cert_details.admin_details"); ?></h3>
@@ -188,46 +207,166 @@ if(isset($_GET['success']) && $_GET['success'] == 'change_mail'){
                 <h4><?php $this->Html->_($certificate->admin_phone); ?></h4>
             </div>
         </div>
-
-        <h3><?php $this->_("ThesslstoreModule.tab_client_cert_details.tech_details"); ?></h3>
-        <div class="row">
-
-            <div class="col-md-3 service-info">
-                <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.tech_title"); ?></label>
-            </div>
-            <div class="col-md-9 service-info">
-                <h4><?php $this->Html->_($certificate->tech_title); ?></h4>
-            </div>
-
-            <div class="col-md-3 service-info">
-                <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.tech_first_name"); ?></label>
-            </div>
-            <div class="col-md-9 service-info">
-                <h4><?php $this->Html->_($certificate->tech_first_name); ?></h4>
-            </div>
-
-            <div class="col-md-3 service-info">
-                <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.tech_last_name"); ?></label>
-            </div>
-            <div class="col-md-9 service-info">
-                <h4><?php $this->Html->_($certificate->tech_last_name); ?></h4>
-            </div>
-
-            <div class="col-md-3 service-info">
-                <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.tech_email"); ?></label>
-            </div>
-            <div class="col-md-9 service-info">
-                <h4><?php $this->Html->_($certificate->tech_email); ?></h4>
-            </div>
-
-            <div class="col-md-3 service-info">
-                <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.tech_phone"); ?></label>
-            </div>
-            <div class="col-md-9 service-info">
-                <h4><?php $this->Html->_($certificate->tech_phone); ?></h4>
-            </div>
-        </div>
         <?php
+        if($certificate->vendor_name != 'DIGICERT'){
+            ?>
+            <h3><?php $this->_("ThesslstoreModule.tab_client_cert_details.tech_details"); ?></h3>
+            <div class="row">
+
+                <div class="col-md-3 service-info">
+                    <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.tech_title"); ?></label>
+                </div>
+                <div class="col-md-9 service-info">
+                    <h4><?php $this->Html->_($certificate->tech_title); ?></h4>
+                </div>
+
+                <div class="col-md-3 service-info">
+                    <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.tech_first_name"); ?></label>
+                </div>
+                <div class="col-md-9 service-info">
+                    <h4><?php $this->Html->_($certificate->tech_first_name); ?></h4>
+                </div>
+
+                <div class="col-md-3 service-info">
+                    <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.tech_last_name"); ?></label>
+                </div>
+                <div class="col-md-9 service-info">
+                    <h4><?php $this->Html->_($certificate->tech_last_name); ?></h4>
+                </div>
+
+                <div class="col-md-3 service-info">
+                    <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.tech_email"); ?></label>
+                </div>
+                <div class="col-md-9 service-info">
+                    <h4><?php $this->Html->_($certificate->tech_email); ?></h4>
+                </div>
+
+                <div class="col-md-3 service-info">
+                    <label><?php $this->_("ThesslstoreModule.tab_client_cert_details.tech_phone"); ?></label>
+                </div>
+                <div class="col-md-9 service-info">
+                    <h4><?php $this->Html->_($certificate->tech_phone); ?></h4>
+                </div>
+            </div>
+            <?php
         }
-        ?>
+        if(($certificate->order_status == 'PENDING' || $certificate->order_status == 'PENDING_REISSUE') && !empty($auth_details)){
+            ?>
+            <h3><?php $this->_("ThesslstoreModule.tab_client_cert_details.auth_details"); ?></h3>
+            <div class="row">
+                <div class="col-md-12 table-responsive">
+                    <table class="table table-curved">
+                        <tbody>
+                        <?php
+                        foreach($auth_details as $domain_name => $auth_detail){
+                            ?>
+                            <tr style="background-color: #f9f9f9;">
+                                <td><strong><?php $this->Html->_($domain_name); ?></strong></td>
+                                <td><strong><?php $this->Html->_($auth_detail['method']); ?></strong></td>
+                                <td>
+                                    <strong><?php $this->Html->_($auth_detail['dcv_status']); ?></strong>
+                                    <?php
+                                    if($auth_detail['method'] == 'FILE'){
+                                        $this->Form->create($this->base_uri . "services/manage/" . $this->Html->ifSet($service->id) . "/tabClientDownloadAuthFile/",array('class'=> 'pull-right'));
+                                        $this->Form->fieldHidden("file_name", $auth_detail['file_name']);
+                                        $this->Form->fieldHidden("file_content", $auth_detail['file_content']);
+                                        ?>
+                                        <button class="btn btn-default pull-right" type="submit" name="save">
+                                            <?php $this->_("ThesslstoreModule.tab_DownloadAuthFile");?>
+                                        </button>
+                                        <?php
+                                        $this->Form->end();
+                                    }
+                                    if($auth_detail['method'] == 'EMAIL' && $auth_detail['dcv_status']!= 'Validated'){
+                                        ?>
+                                        <button data-domain="<?php $this->Html->_($domain_name); ?>" class="btn btn-default pull-right resend-approver" type="button">
+                                            <?php $this->_("ThesslstoreModule.tab_resend_approver.button");?>
+                                        </button>
+                                        <?php
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                            <?php
+                            if($auth_detail['method'] == 'FILE'){
+                                ?>
+                                <tr>
+                                    <td>File Name:</td>
+                                    <td colspan="2" style="word-break: break-all;"><?php $this->Html->_($auth_detail['file_url']); ?></td>
+                                </tr>
+                                <tr>
+                                    <td>File Content:</td>
+                                    <td colspan="2" style="word-break: break-all;"><?php echo nl2br($auth_detail['file_content']); ?></td>
+                                </tr>
+                                <?php
+                            }
+                            elseif($auth_detail['method'] == 'CNAME'){
+                                ?>
+                                <tr>
+                                    <td>Host/Alias:</td>
+                                    <td colspan="2" style="word-break: break-all;"><?php $this->Html->_($auth_detail['alias']); ?></td>
+                                </tr>
+                                <tr>
+                                    <td>value:</td>
+                                    <td colspan="2" style="word-break: break-all;"><?php $this->Html->_($auth_detail['point_to']); ?></td>
+                                </tr>
+                                <?php
+                            }
+                            elseif($auth_detail['method'] == 'DNS'){
+                                ?>
+                                <tr>
+                                    <td>value:</td>
+                                    <td colspan="2" style="word-break: break-all;"><?php $this->Html->_($auth_detail['point_to']); ?></td>
+                                </tr>
+                                <?php
+                            }
+                            elseif($auth_detail['method'] == 'EMAIL'){
+                                ?>
+                                <tr>
+                                    <td>Email:</td>
+                                    <td colspan="2"><?php $this->Html->_($auth_detail['email']); ?></td>
+                                </tr>
+                                <?php
+                            }
+                            ?>
+                            <tr>
+
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <?php
+        }
+    }
+    ?>
 </div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+	    var vendor_name = '<?php $this->Html->_($vendor_name); ?>';
+	    $('button.resend-approver').click(function(){
+                    $('form').append($(this).blestaLoadingDialog());
+                    var domain_name = $('.resend-approver').attr('data-domain');
+                    $(document).blestaRequest('POST',
+                        '<?php  $this->Html->_($get_approver_email_url) ?>',
+                        {'domain_name': domain_name, 'ssl_token':'<?php  $this->Html->_($token) ?>','vendor_name':'<?php  $this->Html->_($vendor_name) ?>', 'action':'resend_approver'},
+                        function(result){
+                            if (result.is_error == true){
+                                alert("Error: "+ result.message);
+                            }
+                            else{
+                                alert(result.message);
+                            }
+                            $(".loading_container", $('form')).remove();
+                        },
+                        null,
+                        {dataType: 'json'}
+                    );
+        });
+	});
+</script>
