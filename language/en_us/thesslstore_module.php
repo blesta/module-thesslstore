@@ -13,10 +13,13 @@ $lang['ThesslstoreModule.!error.profit_margin.empty'] = "Please Enter Your Desir
 $lang['ThesslstoreModule.!error.profit_margin.valid'] = "Only Numbers Allowed In  Desired Profit Margin";
 $lang['ThesslstoreModule.!error.invalid_screen'] = "Invalid Action! Something went Wrong!";
 $lang['ThesslstoreModule.!error.empty_package_group'] = "Opps, It appears you haven't created any package groups. You'll need to first create a group prior to importing any products. Once you've done that please return back and proceed with importation.";
+$lang['ThesslstoreModule.!error.empty_currency_array'] = "Opps, It appears you haven't setup any currency. You'll need to first setup a currency prior to importing any products. Once you've done that please return back and proceed with importation.";
 $lang['ThesslstoreModule.!error.import_package_error'] = "Products already there within the selected product group.";
+$lang['ThesslstoreModule.!error.empty_client'] = "Opps, It appears you haven't created any client. You'll need to first create a client prior to importing any order. Once you've done that please return back and proceed with importation.";
 
 //Success Message
 $lang['ThesslstoreModule.!success.import_package_success'] = "Products Imported Successfully";
+$lang['ThesslstoreModule.!success.import_order_success'] = "Order added successfully";
 
 // Cron tasks
 $lang['ThesslstoreModule.getCronTasks.tss_order_sync_name'] = "SSL Order Synchronization";
@@ -30,10 +33,13 @@ $lang['ThesslstoreModule.module_row_plural'] = "Resellers";
 $lang['ThesslstoreModule.add_credential_row'] = "Add Credential";
 $lang['ThesslstoreModule.edit_credential_row'] = "Update Credential";
 $lang['ThesslstoreModule.import_product_row'] = "Import Packages";
+$lang['ThesslstoreModule.import_order_row'] = "Import Orders";
 $lang['ThesslstoreModule.setup_price_row'] = "Setup Package Pricing";
 $lang['ThesslstoreModule.replacement_order_row'] = "Symantec Replacement Orders List";
 $lang['ThesslstoreModule.add_row.box_title'] = "Manage Credential";
 $lang['ThesslstoreModule.add_row.basic_title'] = "Add Credential";
+$lang['ThesslstoreModule.edit_additional_settings_row'] = "Additional Settings";
+$lang['ThesslstoreModule.additional_settings.box_title'] = "Additional Settings";
 
 //Manage Credential
 $lang['ThesslstoreModule.add_credential.update_success'] = "API Credential saved successfully";
@@ -46,7 +52,13 @@ $lang['ThesslstoreModule.setup_price.margin_percentage'] = "Profit Margin(in %)"
 $lang['ThesslstoreModule.setup_price.update_success'] = "Price updated successfully.";
 $lang['ThesslstoreModule.add_row.manage_credential'] = "API Credential";
 $lang['ThesslstoreModule.add_row.import_packages'] = "SSL Store Products Import";
+$lang['ThesslstoreModule.add_row.import_orders'] = "SSL Store Order Import";
 $lang['ThesslstoreModule.setup_price.update_mode'] = "It seems that you have changed the \"Operation Mode\" to \"LIVE\"! If current products pricing were setup for the \"TEST\" mode then Please update it from here.";
+$lang['ThesslstoreModule.setup_price.info'] = "Please select the currency code from the below drop down and click on submit button to view the price of all the products for that selected currency.";
+$lang['ThesslstoreModule.setup_price.error'] = " No Records Found for the current selection.";
+$lang['ThesslstoreModule.additional_settings.tech_info'] = "Technical Contact Information";
+$lang['ThesslstoreModule.additional_settings.other_settings'] = "Other Settings";
+$lang['ThesslstoreModule.additional_settings.update_success'] = "Additional Settings saved successfully";
 
 $lang['ThesslstoreModule.row_meta.thesslstore_reseller_name'] = 'Reseller Name';
 $lang['ThesslstoreModule.row_meta.api_partner_code_live'] = "Live PartnerCode";
@@ -54,13 +66,49 @@ $lang['ThesslstoreModule.row_meta.api_auth_token_live'] = "Live AuthToken";
 $lang['ThesslstoreModule.row_meta.api_partner_code_test'] = "Test PartnerCode";
 $lang['ThesslstoreModule.row_meta.api_auth_token_test'] = "Test AuthToken";
 $lang['ThesslstoreModule.row_meta.api_mode'] = "Operation Mode";
+$lang['ThesslstoreModule.row_meta.import_package_with_percentage'] = "Import package with % margin";
+$lang['ThesslstoreModule.row_meta.import_package_with_price'] = "Import package with individual pricing";
 $lang['ThesslstoreModule.row_meta.product_group'] = "Select Package Group";
+$lang['ThesslstoreModule.row_meta.currency_code'] = "Select Currency Code";
 $lang['ThesslstoreModule.row_meta.profit_margin'] = "Enter Desired Profit Margin";
-$lang['ThesslstoreModule.row_meta.hide_changeapprover_option'] = "Hide Change Approver Email Option For Symantec DV Products?";
+$lang['ThesslstoreModule.row_meta.profit_margin_info'] = "% Margin will apply to the price of all the products. You can change it later on from the price setup menu.";
+$lang['ThesslstoreModule.row_meta.product_pricing_note'] = "<strong>Note:-</strong>The price of all the products will be setup base on the <strong>\"Base Conv. Rate\"</strong> of the selected Currency Code and <strong>%apicurrencycode%</strong> Currency Code. So please make sure that you have set up the correct <strong>\"Base Conv. Rate\"</strong> for each currency. (The default price of all the products from TheSSLStore API is in <strong>%apicurrencycode%</strong>.)";
+
+$lang['ThesslstoreModule.row_meta.default_tech_details'] = 'Use This Information During Client Side Certificate Generation Process?';
+$lang['ThesslstoreModule.row_meta.default_tech_job_title'] = 'Job Title';
+$lang['ThesslstoreModule.row_meta.default_tech_first_name'] = 'First Name';
+$lang['ThesslstoreModule.row_meta.default_tech_last_name'] = 'Last Name';
+$lang['ThesslstoreModule.row_meta.default_tech_organization_name'] = 'Organization Name';
+$lang['ThesslstoreModule.row_meta.default_tech_address'] = 'Address';
+$lang['ThesslstoreModule.row_meta.default_tech_phone_number'] = 'Phone Number';
+$lang['ThesslstoreModule.row_meta.default_tech_email_address'] = 'Email Address';
+$lang['ThesslstoreModule.row_meta.default_tech_city'] = 'City';
+$lang['ThesslstoreModule.row_meta.default_tech_state'] = 'State/Region';
+$lang['ThesslstoreModule.row_meta.default_tech_country'] = 'Country';
+$lang['ThesslstoreModule.row_meta.default_tech_zip_code'] = 'Zip Code';
+
+$lang['ThesslstoreModule.row_meta.additionaldays_for_new_order'] = 'Additional Days for New Order (0 - 90 days)';
+$lang['ThesslstoreModule.row_meta.additionaldays_for_renew_order'] = 'Additional Days for ReNew Order (0 - 90 days)';
+
+$lang['ThesslstoreModule.row_meta.store_order_id'] = 'Enter SSL Store OrderID';
+$lang['ThesslstoreModule.row_meta.import_order_type_new'] = 'Create new order in Blesta Panel';
+$lang['ThesslstoreModule.row_meta.import_order_type_existing'] = 'Map with existing order';
+$lang['ThesslstoreModule.row_meta.client_label'] = 'Select Client';
+$lang['ThesslstoreModule.row_meta.invoice_method_label'] = 'Invoice Method';
+$lang['ThesslstoreModule.row_meta.invoice_method_create'] = 'Create Invoice';
+$lang['ThesslstoreModule.row_meta.invoice_method_append'] = 'Append to Invoice';
+$lang['ThesslstoreModule.row_meta.invoice_method_none'] = 'Do Not Invoice';
+$lang['ThesslstoreModule.row_meta.send_email_label'] = 'Send order confirmation email';
+$lang['ThesslstoreModule.row_meta.service_id_label'] = 'Select Blesta Service Id';
+
+
+
 
 $lang['ThesslstoreModule.credential_row.add_btn'] = "Save";
 $lang['ThesslstoreModule.import_packages_row.add_btn'] = "Import Packages";
 $lang['ThesslstoreModule.change_approver_email.save_btn'] = "Save";
+$lang['ThesslstoreModule.setup_price.currency_submit_btn'] = "Submit";
+$lang['ThesslstoreModule.import_orders_row.add_btn'] = "Import Order";
 
 //Package
 $lang['ThesslstoreModule.package_fields.product_code'] = "Product code";
@@ -74,6 +122,7 @@ $lang['TheSSLStore.!error.meta[thesslstore_validation_type].valid'] = "Invalid V
 //Client Service Management - Certificate Details
 $lang['ThesslstoreModule.!error.invalid_service_status'] = "Service must be active for this features";
 $lang['ThesslstoreModule.success.generate_cert'] = "Certificate generation process completed successfully";
+$lang['ThesslstoreModule.tab_client_cert_details.cert_completed_details'] = "Your SSL certificate generation process has now been completed and sent to the Certificate Authority for validation. If there are any questions or issues, the Certificate Authority will reach out to the admin contact to clarify and resolve.";
 $lang['ThesslstoreModule.tab_CertDetails'] = "Certificate Details";
 $lang['ThesslstoreModule.tab_client_cert_details'] = "Certificate Details";
 $lang['ThesslstoreModule.tab_client_cert_details.order_status'] = "Order Status";
@@ -82,6 +131,7 @@ $lang['ThesslstoreModule.tab_client_cert_details.store_order_id'] = "Store Order
 $lang['ThesslstoreModule.tab_client_cert_details.token'] = "Token";
 $lang['ThesslstoreModule.tab_client_cert_details.package_name'] = "Package Name";
 $lang['ThesslstoreModule.tab_client_cert_details.vendor_order_id'] = "Vendor Order ID";
+$lang['ThesslstoreModule.tab_client_cert_details.org_name'] = "Organization";
 $lang['ThesslstoreModule.tab_client_cert_details.vendor_status'] = "Vendor Status";
 $lang['ThesslstoreModule.tab_client_cert_details.ssl_start_date'] = "SSL Provisioning Date";
 $lang['ThesslstoreModule.tab_client_cert_details.ssl_end_date'] = "SSL Expiry Date";
@@ -100,6 +150,8 @@ $lang['ThesslstoreModule.tab_client_cert_details.tech_first_name'] = "First Name
 $lang['ThesslstoreModule.tab_client_cert_details.tech_last_name'] = "Last Name";
 $lang['ThesslstoreModule.tab_client_cert_details.tech_email'] = "Email";
 $lang['ThesslstoreModule.tab_client_cert_details.tech_phone'] = "Phone";
+$lang['ThesslstoreModule.tab_client_cert_details.auth_details'] = "Validation Details";
+
 
 //Client Reissue Cert tab
 $lang['ThesslstoreModule.!error.reissue_cert_invalid_certificate_status'] = "Reissue available only for Active certificate.";
@@ -107,13 +159,12 @@ $lang['ThesslstoreModule.success.reissue_cert'] = "Certificate Re-Issue process 
 $lang['ThesslstoreModule.tab_reissue_cert.heading'] = "Re-Issue Certificate";
 $lang['ThesslstoreModule.tab_reissue_cert.submit'] = "Re-Issue";
 
-//Change approver email tab field
-$lang['ThesslstoreModule.tab_select_approver_email'] = "Select Approver Email";
-$lang['ThesslstoreModule.tab_ChangeApproverEmail'] = "Change Approver Email";
+//Change approver method tab field
+$lang['ThesslstoreModule.tab_ChangeApproverEmail'] = "Manage Approver Email/Method";
 $lang['ThesslstoreModule.!error.change_approver_email_not_available_for_order'] = "Change Approver Email feature is not available for this order.";
 $lang['ThesslstoreModule.!error.change_approver_email_not_available_for_product'] = "Change Approver Email feature is not available for this certificate.";
 $lang['ThesslstoreModule.!error.resend_approver_email_not_available_for_order'] = "Resend Approver Email feature is not available for this order.";
-$lang['ThesslstoreModule.success.change_approver_email'] = "Approver Email changed successfully";
+$lang['ThesslstoreModule.success.change_approver_email'] = "Approver Email/Method changed successfully";
 
 //Download Authfile tab field
 $lang['ThesslstoreModule.tab_DownloadAuthFile'] = "Download Auth File";
@@ -127,12 +178,13 @@ $lang['ThesslstoreModule.!error.initial_order_status'] = "This feature is not av
 
 //Client Service Management -
 $lang['ThesslstoreModule.tab_GenerateCert'] = "Generate Certificate";
-$lang['ThesslstoreModule.tab_generate_cert.heading_approver_email'] = "Select Approver Email";
+//$lang['ThesslstoreModule.tab_generate_cert.heading_approver_email'] = "Select Approver Email";
 $lang['ThesslstoreModule.tab_generate_cert.heading_step3'] = "Configuration Complete";
 $lang['ThesslstoreModule.!error.generate_cert_invalid_certificate_status'] = "Generation process already completed.";
 $lang['ThesslstoreModule.tab_generate_cert.heading_server'] = "Server Information";
 $lang['ThesslstoreModule.service_field.thesslstore_csr'] = "Input CSR";
 $lang['ThesslstoreModule.service_field.thesslstore_additional_san'] = "Additional SAN";
+$lang['ThesslstoreModule.service_field.thesslstore_additional_san_help'] = "(Input every SAN in separate line)";
 $lang['ThesslstoreModule.service_field.thesslstore_webserver_type'] = "Select Your Web Server";
 $lang['ThesslstoreModule.service_field.thesslstore_signature_algorithm'] = "Signature Algorithm";
 $lang['ThesslstoreModule.tab_generate_cert.heading_auth_method'] = "Authentication Method";
@@ -142,6 +194,7 @@ $lang['ThesslstoreModule.service_field.thesslstore_admin_last_name'] = "Last Nam
 $lang['ThesslstoreModule.service_field.thesslstore_admin_title'] = "Title";
 $lang['ThesslstoreModule.service_field.thesslstore_admin_email'] = "Email Address";
 $lang['ThesslstoreModule.service_field.thesslstore_admin_phone'] = "Phone Number";
+$lang['ThesslstoreModule.tab_generate_cert.heading_organization'] = "Organization Information";
 $lang['ThesslstoreModule.service_field.thesslstore_org_name'] = "Organization Name";
 $lang['ThesslstoreModule.service_field.thesslstore_org_division'] = "Organization Division";
 $lang['ThesslstoreModule.service_field.thesslstore_admin_address1'] = "Address 1";
@@ -157,7 +210,10 @@ $lang['ThesslstoreModule.service_field.thesslstore_tech_last_name'] = "Last Name
 $lang['ThesslstoreModule.service_field.thesslstore_tech_title'] = "Title";
 $lang['ThesslstoreModule.service_field.thesslstore_tech_email'] = "Email Address";
 $lang['ThesslstoreModule.service_field.thesslstore_tech_phone'] = "Phone Number";
+$lang['ThesslstoreModule.service_field.ssl_org_detail_new'] = "Create New Organization";
+$lang['ThesslstoreModule.service_field.ssl_org_detail_existing'] = "Use Existing Organization";
 $lang['ThesslstoreModule.please_select'] = "-- Please Select --";
+$lang['ThesslstoreModule.sslstore_mass_email'] = "Select default email for all domains";
 $lang['ThesslstoreModule.tab_generate_cert_step1.submit'] = "Submit";
 
 $lang['ThesslstoreModule.!error.thesslstore_csr.empty'] = "Please enter CSR";
@@ -170,6 +226,7 @@ $lang['ThesslstoreModule.!error.thesslstore_admin_first_name.empty'] = "Please e
 $lang['ThesslstoreModule.!error.thesslstore_admin_last_name.empty'] = "Please enter Admin Last Name";
 $lang['ThesslstoreModule.!error.thesslstore_admin_email.empty'] = "Please enter Admin Email";
 $lang['ThesslstoreModule.!error.thesslstore_admin_phone.empty'] = "Please enter Admin Phone";
+$lang['ThesslstoreModule.!error.thesslstore_org_id.empty'] = "Please select Organization";
 $lang['ThesslstoreModule.!error.thesslstore_org_name.empty'] = "Please enter Organization Name";
 $lang['ThesslstoreModule.!error.thesslstore_org_division.empty'] = "Please enter Organization Division";
 $lang['ThesslstoreModule.!error.thesslstore_admin_address1.empty'] = "Please enter Address";
@@ -182,9 +239,13 @@ $lang['ThesslstoreModule.!error.thesslstore_tech_last_name.empty'] = "Please ent
 $lang['ThesslstoreModule.!error.thesslstore_tech_email.empty'] = "Please enter Technical Email";
 $lang['ThesslstoreModule.!error.thesslstore_tech_phone.empty'] = "Please enter Technical Phone";
 
+$lang['ThesslstoreModule.tab_change_approver.button'] = "Change";
+$lang['ThesslstoreModule.tab_change_approver_for_all.button'] = "Change All";
+$lang['ThesslstoreModule.tab_resend_approver.button'] = "Resend";
 $lang['ThesslstoreModule.tab_ResendApproverEmail'] = "Resend Approver Email";
 $lang['ThesslstoreModule.success.resend_approver_email'] = "Approver Email sent successfully";
 $lang['ThesslstoreModule.!error.resend_invalid_status'] = "Resend Approver Email is available only for pending order";
+$lang['ThesslstoreModule.tab_change_approver_success_msg'] = "Approver Method Updated Successfully";
 
 $lang['ThesslstoreModule.tab_ReissueCert'] = "Re-issue Certificate";
 
