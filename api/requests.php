@@ -10,8 +10,8 @@ include_once "abstractions.php";
 
 class csr_request extends baserequest
 {
-    public $ProductCode;
-    public $CSR;
+    public $ProductCode = '';
+    public $CSR = '';
 }
 
 class ssl_validation_request extends baserequest
@@ -193,9 +193,11 @@ class order_neworder_request extends baserequest
     public $CNAMEAuthDVIndicator;
     public $HTTPSFileAuthDVIndicator;
     public $SignatureHashAlgorithm;
-    public $CertTransparencyIndicator = false;
-    public $DateTimeCulture = 'en-US';
+    public $CertTransparencyIndicator;
+    public $RenewalDays;
+    public $DateTimeCulture;
     public $CSRUniqueValue;
+    public $PreOrganizationId;
 }
 
 
@@ -228,7 +230,17 @@ class order_query_request extends baserequest
     public $SubUserID;
     public $ProductCode;
     public $DateTimeCulture;
+    public $PageNumber;
+    public $PageSize;
+}
 
+class order_modified_summary_request extends baserequest
+{
+    public $SubUserID;
+    public $StartDate;
+    public $EndDate;
+    public $PageNumber;
+    public $PageSize;
 }
 
 class order_certificaterevokerequest_request extends baserequest
@@ -320,10 +332,17 @@ class order_approverlist_request extends baserequest
     
     public $ProductCode;
     public $DomainName;
-    public $RelatedTheSSLStoreOrderID;
 }
 
 class order_changeapproveremail_request extends baserequest
+{
+    public $TheSSLStoreOrderID;
+    public $ResendEmail;
+    public $ApproverMethod;
+    public $DomainNames;
+}
+
+class order_change_approver_method_request extends baserequest
 {
     public $CustomOrderID;
     public $TheSSLStoreOrderID;
@@ -349,6 +368,10 @@ class order_status_request extends baserequest
     public $SerialNumber;
     public $ReturnPKCS7Cert;
     public $DateTimeCulture;
+}
+
+class order_pmr_request extends baserequest{
+    public $TheSSLStoreOrderID;
 }
 
 
@@ -435,6 +458,7 @@ class user_newuser_request extends baserequest
    public $UserType;
    public $HearedBy;
 }
+
 class order_replacement_request extends baserequest
 {
     /* public $CustomOrderID;
@@ -445,3 +469,102 @@ class order_replacement_request extends baserequest
      public $PageNumber;
      public $PageSize;*/
 }
+
+class user_account_detail_request extends baserequest
+{
+    public $PartnerCode;
+    public $AuthToken;
+    public $ReplayToken;
+    public $UserAgent;
+    public $IPAddress;
+}
+
+class csr_download_request extends baseRequest{
+    public $CustomOrderID;
+    public $TheSSLStoreOrderID;
+}
+
+class cwatch_product_list_request extends baserequest{
+    public $ProductCode;
+}
+
+class cwatch_invite_order_request extends baserequest
+{
+    public $ProductCode;
+    public $RequestorEmail;
+    public $CustomOrderID;
+    public $ValidityPeriod;
+    public $EmailLanguageCode;
+    public $PreferSendOrderEmails;
+}
+
+class cwatch_new_order_request extends baserequest
+{
+    public function __construct(){
+        $this->AdminContact = new cwatch_admin_contact();
+        parent::__construct();
+    }
+    public $autoLicenseUpgrade;
+    public $automaticRenewal;
+    public $CustomOrderID;
+    public $ProductCode;
+    public $ValidityPeriod;
+    public $DomainName;
+    public $SpecialInstructions;
+    public $AdminContact;
+    public $ApproverEmail;
+    public $EmailLanguageCode;
+}
+
+class cwatch_update_site_request extends baserequest{
+    public $TheSSLStoreOrderID;
+    public $DomainName;
+}
+
+class cwatch_upgrade_license_request extends baserequest{
+    public $TheSSLStoreOrderID;
+    public $ValidityPeriod;
+    public $ProductCode;
+}
+
+
+class digicert_create_organization_request extends baserequest{
+    public function __construct(){
+        $this->OrganizationContact = new digicert_organization_contact();
+        $this->ApproversContact = new digicert_organization_contact();
+        parent::__construct();
+    }
+    public $Name;
+    public $AssumedName;
+    public $Address;
+    public $Address2;
+    public $Zip;
+    public $City;
+    public $State;
+    public $Country;
+    public $Organization_Phone;
+    public $OrganizationContact;
+    public $ApproversContatct;
+}
+
+class digicert_get_organization_request extends baserequest{
+    public $OrganizationId;
+}
+
+class digicert_organization_list_request extends baserequest{
+
+}
+
+class digicert_set_approver_method_request extends baserequest{
+    public $DomainName;
+    public $PreOrganizationId;
+    public $TheSSLStoreOrderID;
+    public $ValidationsTypes;
+    public $ApproverMethod;
+}
+
+class digicert_get_domain_request extends baseRequest{
+    public $DomainName;
+    public $TheSSLStoreOrderID;
+}
+
