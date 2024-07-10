@@ -2121,7 +2121,7 @@ class ThesslstoreModule extends Module {
 
             $this->log($this->api_partner_code . "|ssl-refund-request", serialize($refundReq), "input", true);
             $refundRes = $api->order_refundrequest($refundReq);
-            if(!$refundRes->AuthResponse->Message[0])
+            if(!($refundRes->AuthResponse->Message[0]))
             {
                 $errorMessage=$refundRes->AuthResponse->Message;
             }
