@@ -1865,6 +1865,19 @@ class ThesslstoreModule extends Module {
 
         $order_status_response = $this->getSSLOrderStatus($old_thesslstore_order_id);
 
+        if($order_status_response->OrderStatus->MajorStatus != 'Active') {
+            $this->log("RenewService Cron | $old_thesslstore_order_id", serialize($order_status_response), "output", false);
+            $this->Input->setErrors(array('api' => array('internal' => 'Previous certificate was not activated')));
+            return;
+        }
+        else if (empty($order_status_response->CertificateEndDateInUTC)) {
+            // if not active it might not be EV
+            // Check end date
+            $this->log("RenewService Cron | $old_thesslstore_order_id", serialize($order_status_response), "output", false);
+            $this->Input->setErrors(array('api' => array('internal' => 'Previous certificate was not activated')));
+            return;
+        }
+
         //Placed Invite order first
         $api = $this->getApi();
 
@@ -2121,7 +2134,17 @@ class ThesslstoreModule extends Module {
 
             $this->log($this->api_partner_code . "|ssl-refund-request", serialize($refundReq), "input", true);
             $refundRes = $api->order_refundrequest($refundReq);
-            if(!$refundRes->AuthResponse->Message[0])
+
+            $max_to_refund_date = date('Y-m-d',strtotime('+30 days',strtotime($refundRes->PurchaseDate)));
+            $current_day = date('Y-m-d');
+
+            // if we past the return window ignore errors
+            // so blesta correctly marks this services cancelled
+            if ($current_day > $max_to_refund_date) {
+                return;
+            }
+
+            if(!isset($refundRes->AuthResponse->Message[0]))
             {
                 $errorMessage=$refundRes->AuthResponse->Message;
             }
