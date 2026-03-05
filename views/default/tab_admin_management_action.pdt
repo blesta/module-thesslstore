@@ -1,12 +1,14 @@
-<div class="pad">
+<?php /** @var View $this **/ ?>
+
+<div>
     <?php if(($orderMajorStatus=='Pending' || $orderMinorStatus=='PENDING_REISSUE')&& $fileContent!='' && $fileName!='')
     {
         $this->Form->create($this->base_uri . "clients/servicetab/" . (isset($clientID) ? $clientID : null) . "/" . (isset($serviceID) ? $serviceID : null) . "/tabClientDownloadAuthFile/");
         ?>
-        <button class="btn btn-default float-left" type="submit" name="save">
-            <?php $this->_("ThesslstoreModule.tab_DownloadAuthFile");?>
-        </button>
-        <?php
+    <button class="btn btn-outline-secondary float-start" type="submit" name="save">
+        <?php $this->_("ThesslstoreModule.tab_DownloadAuthFile");?>
+    </button>
+    <?php
         $this->Form->end();
     } ?>
 
@@ -14,10 +16,10 @@
     {
         $this->Form->create($this->base_uri . "clients/servicetab/" . (isset($clientID) ? $clientID : null) . "/" . (isset($serviceID) ? $serviceID : null) . "/tabClientDownloadCertificate/");
         ?>
-        <button class="btn btn-default float-left" type="submit" name="save">
-            <?php $this->_("ThesslstoreModule.tab_DownloadCertificate");?>
-        </button>
-        <?php
+    <button class="btn btn-outline-secondary float-start" type="submit" name="save">
+        <?php $this->_("ThesslstoreModule.tab_DownloadCertificate");?>
+    </button>
+    <?php
         $this->Form->end();
     } ?>
 
@@ -27,10 +29,10 @@
         {
             $this->Form->create($this->base_uri . "clients/servicetab/" . (isset($clientID) ? $clientID : null) . "/" . (isset($serviceID) ? $serviceID : null) . "/tabAdminChangeApproverEmail/");
             ?>
-            <div class="button_row">
-                <a class="btn btn-default submit" href="<?php $this->base_uri . "clients/servicetab/" . (isset($clientID) ? $clientID : null) . "/" . (isset($serviceID) ? $serviceID : null) . "/tabAdminChangeApproverEmail/"?>"><?php $this->_("ThesslstoreModule.tab_ChangeApproverEmail");?></a>
-            </div>
-            <?php
+    <div class="d-flex justify-content-start">
+        <a class="btn btn-outline-secondary submit" href="<?php echo $this->Html->safe($this->base_uri . "clients/servicetab/" . (isset($clientID) ? $clientID : null) . "/" . (isset($serviceID) ? $serviceID : null) . "/tabAdminChangeApproverEmail/");?>"><?php $this->_("ThesslstoreModule.tab_ChangeApproverEmail");?></a>
+    </div>
+    <?php
             $this->Form->end();
         }
     } ?>
@@ -39,10 +41,10 @@
     {
         $this->Form->create($this->base_uri . "clients/servicetab/" . (isset($clientID) ? $clientID : null) . "/" . (isset($serviceID) ? $serviceID : null) . "/tabClientResendApproverEmail/");
         ?>
-        <div class="button_row">
-            <a class="btn btn-default submit" href="<?php $this->base_uri . "clients/servicetab/" . (isset($clientID) ? $clientID : null) . "/" . (isset($serviceID) ? $serviceID : null) . "/tabClientResendApproverEmail/"?>"><?php $this->_("ThesslstoreModule.tab_ResendApproverEmail");?></a>
-        </div>
-        <?php
+    <div class="d-flex justify-content-start">
+        <a class="btn btn-outline-secondary submit" href="<?php echo $this->Html->safe($this->base_uri . "clients/servicetab/" . (isset($clientID) ? $clientID : null) . "/" . (isset($serviceID) ? $serviceID : null) . "/tabClientResendApproverEmail/");?>"><?php $this->_("ThesslstoreModule.tab_ResendApproverEmail");?></a>
+    </div>
+    <?php
         $this->Form->end();
     } ?>
 </div>

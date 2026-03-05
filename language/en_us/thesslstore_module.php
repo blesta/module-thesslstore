@@ -48,6 +48,8 @@ $lang['ThesslstoreModule.add_row.manage_credential'] = "API Credential";
 $lang['ThesslstoreModule.add_row.import_packages'] = "SSL Store Products Import";
 $lang['ThesslstoreModule.setup_price.update_mode'] = "It seems that you have changed the \"Operation Mode\" to \"LIVE\"! If current products pricing were setup for the \"TEST\" mode then Please update it from here.";
 
+$lang['Thesslstore_module.back_to_manage'] = 'Back to Thesslstore Module';
+
 $lang['ThesslstoreModule.row_meta.thesslstore_reseller_name'] = 'Reseller Name';
 $lang['ThesslstoreModule.row_meta.api_partner_code_live'] = "Live PartnerCode";
 $lang['ThesslstoreModule.row_meta.api_auth_token_live'] = "Live AuthToken";
