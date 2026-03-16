@@ -6,7 +6,7 @@ $this->Widget->create($this->_('ThesslstoreModule.reseller_price.box_title', tru
 ?>
 
 <div class="inner">
-    <div class="pad">
+    <div class="mb-3">
         <p>
         <h3>Note: Below is your "<?php echo isset($api_mode)
             ? $this->Html->safe($api_mode)

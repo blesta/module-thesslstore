@@ -1,8 +1,10 @@
 <?php /** @var View $this **/ ?>
 
-<h6 class="form-section-header first"><?php $this->_('ThesslstoreModule.tab_select_approver_email'); ?></h6>
-<div class="pad">
-    <?php $this->Form->create(); ?>
+<h6 class="form-section-header"><?php $this->_('ThesslstoreModule.tab_select_approver_email'); ?></h6>
+<div class="mb-3">
+    <?php
+$this->Form->create();
+?>
     <div class="mb-3">
         <h3><?php echo $this->Html->safe($domainName); ?></h3>
     </div>

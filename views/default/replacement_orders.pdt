@@ -10,7 +10,7 @@ $this->Widget->create($this->_('ThesslstoreModule.replacement_order.box_title', 
 ?>
 <div class="inner">
     <?php $this->Form->create(); ?>
-    <div class="pad">
+    <div class="mb-3">
         <ul>
             <li>
             <?php

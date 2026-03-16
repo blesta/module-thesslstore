@@ -25,11 +25,11 @@ $this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
 $this->Form->create();
 ?>
 <div class="inner">
-    <h6 class="form-section-header first"><?php $this->_('ThesslstoreModule.add_row.import_packages'); ?></h6>
+    <h6 class="form-section-header"><?php $this->_('ThesslstoreModule.add_row.import_packages'); ?></h6>
     <?php if ($vars->packageGroupsArray == 'false') { ?>
     <div class="error_box error"><?php $this->_('ThesslstoreModule.!error.empty_package_group'); ?></div>
         <?php } else { ?>
-    <div class="pad">
+    <div class="mb-3">
         <ul>
             <li>
         <?php

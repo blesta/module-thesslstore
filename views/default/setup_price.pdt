@@ -23,8 +23,8 @@ $this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
 ?>
 <div class="inner">
     <?php $this->Form->create(); ?>
-    <h6 class="form-section-header first"><?php $this->_('ThesslstoreModule.add_row.setup_price'); ?></h6>
-    <div class="pad">
+    <h6 class="form-section-header"><?php $this->_('ThesslstoreModule.add_row.setup_price'); ?></h6>
+    <div class="mb-3">
         <ul>
             <li>
         <?php
