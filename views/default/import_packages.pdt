@@ -20,9 +20,8 @@ if (isset($_REQUEST['error']) && $_REQUEST['error'] == 'true') { ?>
 echo isset($message) ? $message : null;
 
 $this->Widget->clear();
-$this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
-
 $this->Form->create();
+$this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
 ?>
 <div class="inner">
     <h6 class="form-section-header"><?php $this->_('ThesslstoreModule.add_row.import_packages'); ?></h6>
@@ -60,7 +59,7 @@ $this->Form->create();
     ); ?></a></div>
         <?php } ?>
 </div>
-        <?php $this->Form->end(); ?>
+        <?php $this->Widget->end(); ?>
 </div>
-    <?php $this->Widget->end();
+    <?php $this->Form->end();
 ?>

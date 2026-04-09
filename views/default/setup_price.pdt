@@ -9,20 +9,20 @@ if (isset($_REQUEST['msg'])) {
         <p> <?php $this->_('ThesslstoreModule.setup_price.update_success'); ?></p>
     </article>
 </section>
-<?php } elseif ($_REQUEST['msg'] == 'modeupdated') { ?>
+    <?php } elseif ($_REQUEST['msg'] == 'modeupdated') { ?>
 <section class="error_section">
     <article class="error_box">
         <a class="close" href="#">&times;</a>
         <p> <?php $this->_('ThesslstoreModule.setup_price.update_mode'); ?></p>
     </article>
 </section>
-<?php }
+    <?php }
 }
 $this->Widget->clear();
+$this->Form->create();
 $this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
 ?>
 <div class="inner">
-    <?php $this->Form->create(); ?>
     <h6 class="form-section-header"><?php $this->_('ThesslstoreModule.add_row.setup_price'); ?></h6>
     <div class="mb-3">
         <ul>
@@ -31,7 +31,7 @@ $this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
         $this->Form->fieldCheckbox(
             'thesslstore_apply_margin',
             'yes',
-            (isset($vars->thesslstore_apply_margin) ? $vars->thesslstore_apply_margin : null) == 'yes',
+            ($vars->thesslstore_apply_margin ?? null) == 'yes',
             ['id' => 'thesslstore_apply_margin'],
         );
         $this->Form->label($this->_('ThesslstoreModule.setup_price.apply_margin', true), 'thesslstore_apply_margin', [
@@ -42,7 +42,7 @@ $this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
             <li>
         <?php
         $margin_attr = ['id' => 'thesslstore_margin_percentage'];
-        if ((isset($vars->thesslstore_apply_margin) ? $vars->thesslstore_apply_margin : null) != 'yes') {
+        if (($vars->thesslstore_apply_margin ?? null) != 'yes') {
             $margin_attr['disabled'] = 'disabled';
         }
         $this->Form->label(
@@ -52,7 +52,7 @@ $this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
         );
         $this->Form->fieldText(
             'thesslstore_margin_percentage',
-            isset($vars->thesslstore_margin_percentage) ? $vars->thesslstore_margin_percentage : null,
+            $vars->thesslstore_margin_percentage ?? null,
             $margin_attr,
         );
         ?>
@@ -84,12 +84,12 @@ $this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
             <?php
 //echo "<pre>";
 //print_r($data);
-?>
+            ?>
             <tr>
                 <?php $this->Form->fieldHidden('packages_id[]', $id); ?>
-                <td><?php echo isset($data['group_name']) ? $data['group_name'] : null; ?></td>
-                <td><?php echo isset($data['name']) ? $data['name'] : null; ?></td>
-                <td><?php echo isset($data['product_code']) ? $data['product_code'] : null; ?></td>
+                <td><?php echo $data['group_name'] ?? null; ?></td>
+                <td><?php echo $data['name'] ?? null; ?></td>
+                <td><?php echo $data['product_code'] ?? null; ?></td>
                 <td>USD</td>
                 <td>
                     <?php if (isset($data['pricing']['1year'])) {
@@ -135,37 +135,37 @@ $this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
                 <td> - </td>
                 <td>USD</td>
                 <td>
-                    <?php if (isset($data['san_pricing']['1year'])) {
-                        $this->Form->fieldText(
-                            "price[{$data['san_pricing']['1year']['pricing_id']}]",
-                            $data['san_pricing']['1year']['price'],
-                            ['style' => 'width:100px;'],
-                        );
-                    } else {
-                        echo 'N/A';
-                    } ?>
+                        <?php if (isset($data['san_pricing']['1year'])) {
+                            $this->Form->fieldText(
+                                "price[{$data['san_pricing']['1year']['pricing_id']}]",
+                                $data['san_pricing']['1year']['price'],
+                                ['style' => 'width:100px;'],
+                            );
+                        } else {
+                            echo 'N/A';
+                        } ?>
                 </td>
                 <td>
-                    <?php if (isset($data['san_pricing']['2year'])) {
-                        $this->Form->fieldText(
-                            "price[{$data['san_pricing']['2year']['pricing_id']}]",
-                            $data['san_pricing']['2year']['price'],
-                            ['style' => 'width:100px;'],
-                        );
-                    } else {
-                        echo 'N/A';
-                    } ?>
+                        <?php if (isset($data['san_pricing']['2year'])) {
+                            $this->Form->fieldText(
+                                "price[{$data['san_pricing']['2year']['pricing_id']}]",
+                                $data['san_pricing']['2year']['price'],
+                                ['style' => 'width:100px;'],
+                            );
+                        } else {
+                            echo 'N/A';
+                        } ?>
                 </td>
                 <td>
-                    <?php if (isset($data['san_pricing']['3year'])) {
-                        $this->Form->fieldText(
-                            "price[{$data['san_pricing']['3year']['pricing_id']}]",
-                            $data['san_pricing']['3year']['price'],
-                            ['style' => 'width:100px;'],
-                        );
-                    } else {
-                        echo 'N/A';
-                    } ?>
+                        <?php if (isset($data['san_pricing']['3year'])) {
+                            $this->Form->fieldText(
+                                "price[{$data['san_pricing']['3year']['pricing_id']}]",
+                                $data['san_pricing']['3year']['price'],
+                                ['style' => 'width:100px;'],
+                            );
+                        } else {
+                            echo 'N/A';
+                        } ?>
                 </td>
             </tr>
                     <?php }
@@ -177,37 +177,37 @@ $this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
                 <td>-</td>
                 <td>USD</td>
                 <td>
-                    <?php if (isset($data['server_pricing']['1year'])) {
-                        $this->Form->fieldText(
-                            "price[{$data['server_pricing']['1year']['pricing_id']}]",
-                            $data['server_pricing']['1year']['price'],
-                            ['style' => 'width:100px;'],
-                        );
-                    } else {
-                        echo 'N/A';
-                    } ?>
+                        <?php if (isset($data['server_pricing']['1year'])) {
+                            $this->Form->fieldText(
+                                "price[{$data['server_pricing']['1year']['pricing_id']}]",
+                                $data['server_pricing']['1year']['price'],
+                                ['style' => 'width:100px;'],
+                            );
+                        } else {
+                            echo 'N/A';
+                        } ?>
                 </td>
                 <td>
-                    <?php if (isset($data['server_pricing']['2year'])) {
-                        $this->Form->fieldText(
-                            "price[{$data['server_pricing']['2year']['pricing_id']}]",
-                            $data['server_pricing']['2year']['price'],
-                            ['style' => 'width:100px;'],
-                        );
-                    } else {
-                        echo 'N/A';
-                    } ?>
+                        <?php if (isset($data['server_pricing']['2year'])) {
+                            $this->Form->fieldText(
+                                "price[{$data['server_pricing']['2year']['pricing_id']}]",
+                                $data['server_pricing']['2year']['price'],
+                                ['style' => 'width:100px;'],
+                            );
+                        } else {
+                            echo 'N/A';
+                        } ?>
                 </td>
                 <td>
-                    <?php if (isset($data['server_pricing']['3year'])) {
-                        $this->Form->fieldText(
-                            "price[{$data['server_pricing']['3year']['pricing_id']}]",
-                            $data['server_pricing']['3year']['price'],
-                            ['style' => 'width:100px;'],
-                        );
-                    } else {
-                        echo 'N/A';
-                    } ?>
+                        <?php if (isset($data['server_pricing']['3year'])) {
+                            $this->Form->fieldText(
+                                "price[{$data['server_pricing']['3year']['pricing_id']}]",
+                                $data['server_pricing']['3year']['price'],
+                                ['style' => 'width:100px;'],
+                            );
+                        } else {
+                            echo 'N/A';
+                        } ?>
                 </td>
             </tr>
                     <?php }
@@ -219,9 +219,9 @@ $this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
     <div class="button_row"><a class="float-end btn btn-primary submit save_price" href="#"><?php $this->_(
         'ThesslstoreModule.credential_row.add_btn',
     ); ?></a></div>
-        <?php $this->Form->end(); ?>
+        <?php $this->Widget->end(); ?>
 </div>
-                    <?php $this->Widget->end(); ?>
+                    <?php $this->Form->end(); ?>
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('thesslstore_apply_margin').addEventListener('change', function() {

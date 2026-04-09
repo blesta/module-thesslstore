@@ -6,10 +6,10 @@ if (isset($_REQUEST['date'])) {
     $selecteddate = $_REQUEST['date'];
 }
 $this->Widget->clear();
+$this->Form->create();
 $this->Widget->create($this->_('ThesslstoreModule.replacement_order.box_title', true));
 ?>
 <div class="inner">
-    <?php $this->Form->create(); ?>
     <div class="mb-3">
         <ul>
             <li>
@@ -28,7 +28,6 @@ $this->Widget->create($this->_('ThesslstoreModule.replacement_order.box_title', 
     <div class="button_row"><a class="btn btn-primary submit" href="#"><?php $this->_(
         'ThesslstoreModule.tab_generate_cert_step1.submit',
     ); ?></a></div>
-    <?php $this->Form->end(); ?>
 
     <div class="links_row button_row">
         <a target="_blank" class="float-end btn btn-outline-secondary" href="<?php echo isset($export_to_csv_link)
@@ -78,5 +77,6 @@ $this->Widget->create($this->_('ThesslstoreModule.replacement_order.box_title', 
     </table>
 </div>
 
-                    <?php $this->Widget->end();
-?>
+                    <?php $this->Widget->end(); ?>
+                    <?php $this->Form->end();
+                    ?>
