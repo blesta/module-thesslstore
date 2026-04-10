@@ -547,18 +547,18 @@ class ThesslstoreModule extends Module
 
             $health_validate_request = new health_validate_request();
 
+            $this->log($api_partner_code, serialize($health_validate_request), 'input', true);
             $response = $api->health_validate($health_validate_request);
 
             if ($response->isError == true) {
-                // Log the response
                 $this->log($api_partner_code, serialize($response), 'output', false);
                 return false;
             } else {
-                // Log the response
                 $this->log($api_partner_code, serialize($response), 'output', true);
                 return true;
             }
         } catch (\Throwable $e) {
+            $this->log('validateCredential', $e->getMessage(), 'output', false);
             return false;
             // Trap any errors encountered, could not validate connection
         }
@@ -824,7 +824,6 @@ class ThesslstoreModule extends Module
      */
     public function manageAddRow(array &$vars)
     {
-        var_dump($vars);
         // Load the view into this object, so helpers can be automatically added to the view
         $scr = $_GET['scr'] ?? '';
         if ($scr == 'addcredential') {
@@ -4069,7 +4068,7 @@ class ThesslstoreModule extends Module
 
         // Break the response into segments no longer than the max length that can be logged
         // (i.e. 64KB = 65535 characters)
-        $responses = str_split(serialize($response), 65535);
+        $responses = $this->utf8_safe_split(serialize($response), 65535);
 
         foreach ($responses as $log) {
             $this->log($this->api_partner_code, $log, 'output', $success);
@@ -4081,4 +4080,30 @@ class ThesslstoreModule extends Module
 
         return $response;
     }
+
+    private function utf8_safe_split($string, $maxBytes) {
+        $chunks = [];
+        $length = strlen($string);
+        $start = 0;
+
+        while ($start < $length) {
+            $end = $start + $maxBytes;
+
+            if ($end >= $length) {
+                $chunks[] = substr($string, $start);
+                break;
+            }
+
+            // Move back until we're at a valid UTF-8 boundary
+            while ($end > $start && (ord($string[$end]) & 0xC0) === 0x80) {
+                $end--;
+            }
+
+            $chunks[] = substr($string, $start, $end - $start);
+            $start = $end;
+        }
+
+        return $chunks;
+    }
+
 }

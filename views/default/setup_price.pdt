@@ -81,10 +81,7 @@ $this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
                 </tr>
             </thead>
         <tbody>
-            <?php
-//echo "<pre>";
-//print_r($data);
-            ?>
+            <?php foreach ($package_data as $id => $data) { ?>
             <tr>
                 <?php $this->Form->fieldHidden('packages_id[]', $id); ?>
                 <td><?php echo $data['group_name'] ?? null; ?></td>
@@ -211,7 +208,7 @@ $this->Widget->create($this->_('ThesslstoreModule.add_row.box_title', true));
                 </td>
             </tr>
                     <?php }
-                    ?>
+                    } ?>
         </tbody>
     </table>
 
