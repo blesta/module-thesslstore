@@ -976,6 +976,12 @@ class ThesslstoreModule extends Module
             }
             $reseller_price_link = explode('?', $_SERVER['REQUEST_URI']);
             $reseller_price_link = $reseller_price_link[0] . '?scr=resellerprice';
+            Loader::loadModels($this, ['ModuleManager']);
+            $module = $this->ModuleManager->getByClass(
+                \Illuminate\Support\Str::snake(get_class($this)),
+                Configure::get('Blesta.company_id')
+            );
+            $this->view->set('module', ($module[0] ?? (object) []));
             $this->view->set('package_data', $package_data);
             $this->view->set('vars', (object)$vars);
             $this->view->set('reseller_price_link', $reseller_price_link);
@@ -2155,6 +2161,7 @@ class ThesslstoreModule extends Module
     {
         return [
             'tabAdminManagementAction' => Language::_('ThesslstoreModule.tab_AdminManagementAction', true),
+            'tabAdminChangeApproverEmail' => Language::_('ThesslstoreModule.tab_AdminChangeApproverEmail', true)
         ];
     }
 
@@ -2772,9 +2779,9 @@ class ThesslstoreModule extends Module
                     $results = $this->parseResponse($api->order_resend($order_resend_req));
 
                     if ($results) {
-                        return '<section class="error_section"><article class="error_box"><div class="alert alert-success alert-dismissable">
-                                    <p style="padding: 0 0 0 20px;">' . Language::_('ThesslstoreModule.success.resend_approver_email', true) . '</p>
-                                </div></article></section>';
+                        return '<div class="alert alert-success" role="alert">'
+                            . Language::_('ThesslstoreModule.success.resend_approver_email', true)
+                            . '</div>';
                     }
                 } else {
                     $this->Input->setErrors(['invalid_action' => ['internal' => Language::_('ThesslstoreModule.!error.resend_invalid_status', true)]]);
@@ -3429,6 +3436,7 @@ class ThesslstoreModule extends Module
             $orderID = $service_fields->thesslstore_order_id;
             // Gether order info using the order status request
             $order_resp = $this->getSSLOrderStatus($orderID);
+
             //Major Status Initial
             if ($order_resp && $order_resp->OrderStatus->MajorStatus != 'Initial') {
                 $fileName = $order_resp->AuthFileName;
@@ -3443,6 +3451,7 @@ class ThesslstoreModule extends Module
                 $this->view->set('VendorName', $order_resp->VendorName);
 
                 /* Retrieve the module row for change approver option */
+                $hide_changeapprover_option = 'NO';
                 $module_rows = $this->getModuleRows();
                 foreach ($module_rows as $row) {
                     if (isset($row->meta->hide_changeapprover_option)) {
@@ -3453,18 +3462,14 @@ class ThesslstoreModule extends Module
 
                 return $this->view->fetch();
             } else {
-                return '<section class="error_section">
-                            <article class="error_box error">
-                                <p style="padding:0 0 0 37px">' . Language::_('ThesslstoreModule.!error.initial_order_status', true) . '</p>
-                            </article>
-                        </section>';
+                return '<div class="alert alert-danger" role="alert">'
+                    . Language::_('ThesslstoreModule.!error.initial_order_status', true)
+                    . '</div>';
             }
         } else {
-            return '<section class="error_section">
-                        <article class="error_box error">
-                            <p style="padding:0 0 0 37px">' . Language::_('ThesslstoreModule.!error.invalid_service_status', true) . '</p>
-                        </article>
-                    </section>';
+            return '<div class="alert alert-danger" role="alert">'
+                . Language::_('ThesslstoreModule.!error.invalid_service_status', true)
+                . '</div>';
         }
     }
 
@@ -3547,9 +3552,9 @@ class ThesslstoreModule extends Module
                     $orderID = $service_fields->thesslstore_order_id;
                     // Call the changeapproveremail function when the save button press
                     if (isset($_POST['save'])) {
-                        $domainsArray = $_POST['domains'];
-                        $emailArray = $_POST['email'];
-                        $approverEmailArray = $_POST['approverEmail'];
+                        $domainsArray = $_POST['domains'] ?? [];
+                        $emailArray = $_POST['email'] ?? [];
+                        $approverEmailArray = $_POST['approverEmail'] ?? [];
                         $this->changeApproverEmail($approverEmailArray, $domainsArray, $emailArray, $orderID);
                         if (!$this->errors()) {
                             //Redirect to certificate details page on success

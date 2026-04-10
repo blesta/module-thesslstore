@@ -192,6 +192,7 @@ $lang['ThesslstoreModule.!error.resend_invalid_status'] = "Resend Approver Email
 $lang['ThesslstoreModule.tab_ReissueCert'] = "Re-issue Certificate";
 
 $lang['ThesslstoreModule.tab_AdminManagementAction'] = "Management Actions";
+$lang['ThesslstoreModule.tab_AdminChangeApproverEmail'] = "Change Approver Email";
 
 //Symantec Replacement Order Related
 $lang['ThesslstoreModule.replacement_order.box_title'] = "Symantec Replacement Orders List";

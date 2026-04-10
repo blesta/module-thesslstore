@@ -1,62 +1,51 @@
 <?php /** @var View $this **/ ?>
 
+<?php $this->Form->create(); ?>
+
 <h6 class="form-section-header"><?php $this->_('ThesslstoreModule.tab_select_approver_email'); ?></h6>
+
 <div class="mb-3">
-    <?php
-$this->Form->create();
-?>
-    <div class="mb-3">
-        <h3><?php echo $this->Html->safe($domainName); ?></h3>
-    </div>
-    <?php
-    $this->Form->fieldHidden('domains[0]', $domainName);
-    $this->Form->fieldHidden('approverEmail[0]', $approverEmail);
-    foreach ($approverEmailsListArray as $value => $key) { ?>
+    <p class="fw-bold"><?php echo $this->Html->safe($domainName); ?></p>
+    <?php $this->Form->fieldHidden('domains[0]', $domainName); ?>
+    <?php $this->Form->fieldHidden('approverEmail[0]', $approverEmail); ?>
+    <?php foreach ($approverEmailsListArray as $value => $key) { ?>
     <div class="form-check">
-    <?php
-    $checked = false;
-    if (isset($key) && $key == $approverEmail) {
-        $checked = true;
-    }
-    $this->Form->fieldRadio('email[0]', $key, $checked, ['id' => $domainName . $key, 'class' => 'form-check-input']);
-    $this->Form->label($key, $domainName . $key, ['class' => 'form-check-label']);
-    ?>
+        <?php
+        $checked = isset($key) && $key == $approverEmail;
+        $this->Form->fieldRadio('email[0]', $key, $checked, ['id' => $domainName . $key, 'class' => 'form-check-input']);
+        $this->Form->label($key, $domainName . $key, ['class' => 'form-check-label']);
+        ?>
     </div>
-    <?php }
-    ?>
-    <?php
-    $domainsCount = count($domainNames);
-    for ($i = 0; $i < $domainsCount; $i++) {
-        $j = $i + 1; ?>
-    <div class="mb-3">
-        <h3><?php echo $this->Html->safe($domainNames[$i]); ?></h3>
-    </div>
-    <?php
-    $this->Form->fieldHidden("domains[$j]", $domainNames[$i]);
-    $this->Form->fieldHidden("approverEmail[$j]", $approverEmails[$i]);
-    foreach ($approverEmailsListArrays[$i] as $values => $keys) { ?>
-    <div class="form-check">
-    <?php
-    $checked = false;
-    if (isset($keys) && $keys == $approverEmails[$i]) {
-        $checked = true;
-    }
-    $this->Form->fieldRadio("email[$j]", $keys, $checked, [
-        'id' => $domainNames[$i] . $keys,
-        'class' => 'form-check-input',
-    ]);
-    $this->Form->label($keys, $domainNames[$i] . $keys, ['class' => 'form-check-label']);
-    ?>
-    </div>
-    <?php }
-    ?>
-    <?php
-    }
-    ?>
-    <div class="d-flex justify-content-start">
-        <button class="btn btn-outline-secondary" type="submit" name="save">
-            <?php $this->_('ThesslstoreModule.change_approver_email.save_btn'); ?>
-        </button>
-        <?php $this->Form->end(); ?>
-    </div>
+    <?php } ?>
 </div>
+
+<?php
+$domainsCount = count($domainNames);
+for ($i = 0; $i < $domainsCount; $i++) {
+    $j = $i + 1; ?>
+<div class="mb-3">
+    <p class="fw-bold"><?php echo $this->Html->safe($domainNames[$i]); ?></p>
+    <?php $this->Form->fieldHidden("domains[$j]", $domainNames[$i]); ?>
+    <?php $this->Form->fieldHidden("approverEmail[$j]", $approverEmails[$i]); ?>
+    <?php foreach ($approverEmailsListArrays[$i] as $values => $keys) { ?>
+    <div class="form-check">
+        <?php
+        $checked = isset($keys) && $keys == $approverEmails[$i];
+        $this->Form->fieldRadio("email[$j]", $keys, $checked, [
+            'id' => $domainNames[$i] . $keys,
+            'class' => 'form-check-input',
+        ]);
+        $this->Form->label($keys, $domainNames[$i] . $keys, ['class' => 'form-check-label']);
+        ?>
+    </div>
+    <?php } ?>
+</div>
+<?php } ?>
+
+<div class="d-flex justify-content-start">
+    <button class="btn btn-primary" type="submit" name="save">
+        <?php $this->_('ThesslstoreModule.change_approver_email.save_btn'); ?>
+    </button>
+</div>
+
+<?php $this->Form->end(); ?>
