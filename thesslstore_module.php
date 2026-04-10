@@ -795,10 +795,10 @@ class ThesslstoreModule extends Module
         foreach ($module->rows as $row) {
             if (isset($row->meta->thesslstore_reseller_name)) {
                 $credential_added = true;
-                $link_buttons[] = ['name' => Language::_('ThesslstoreModule.replacement_order_row', true),'attributes' => ['href' => ['href' => $this->base_uri . 'settings/company/modules/addrow/' . $module->id . '?scr=replacementorder']]];
+                $link_buttons[] = ['name' => Language::_('ThesslstoreModule.replacement_order_row', true), 'attributes' => ['href' => $this->base_uri . 'settings/company/modules/addrow/' . $module->id . '?scr=replacementorder']];
                 $link_buttons[] = ['name' => Language::_('ThesslstoreModule.edit_credential_row', true), 'attributes' => ['href' => $this->base_uri . 'settings/company/modules/addrow/' . $module->id . '?scr=editcredential']];
-                $link_buttons[] = ['name' => Language::_('ThesslstoreModule.import_product_row', true),'attributes' => ['href' => ['href' => $this->base_uri . 'settings/company/modules/addrow/' . $module->id . '?scr=importpackage']]];
-                $link_buttons[] = ['name' => Language::_('ThesslstoreModule.setup_price_row', true),'attributes' => ['href' => ['href' => $this->base_uri . 'settings/company/modules/addrow/' . $module->id . '?scr=setupprice']]];
+                $link_buttons[] = ['name' => Language::_('ThesslstoreModule.import_product_row', true), 'attributes' => ['href' => $this->base_uri . 'settings/company/modules/addrow/' . $module->id . '?scr=importpackage']];
+                $link_buttons[] = ['name' => Language::_('ThesslstoreModule.setup_price_row', true), 'attributes' => ['href' => $this->base_uri . 'settings/company/modules/addrow/' . $module->id . '?scr=setupprice']];
                 break;
             }
         }
@@ -824,6 +824,7 @@ class ThesslstoreModule extends Module
      */
     public function manageAddRow(array &$vars)
     {
+        var_dump($vars);
         // Load the view into this object, so helpers can be automatically added to the view
         $scr = $_GET['scr'] ?? '';
         if ($scr == 'addcredential') {
@@ -834,14 +835,14 @@ class ThesslstoreModule extends Module
             // Load the helpers required for this view
             Loader::loadHelpers($this, ['Form', 'Html', 'Widget']);
 
-        // Fetch module
-        Loader::loadModels($this, ['ModuleManager']);
-        $module = $this->ModuleManager->getByClass(
-            \Illuminate\Support\Str::snake(get_class($this)),
-            Configure::get('Blesta.company_id')
-        );
-        $module = ($module[0] ?? []);
-        $this->view->set('module', (object) $module);
+            // Fetch module
+            Loader::loadModels($this, ['ModuleManager']);
+            $module = $this->ModuleManager->getByClass(
+                \Illuminate\Support\Str::snake(get_class($this)),
+                Configure::get('Blesta.company_id')
+            );
+            $module = ($module[0] ?? []);
+            $this->view->set('module', (object) $module);
             $this->view->set('vars', (object)$vars);
             return $this->view->fetch();
         } elseif ($scr == 'editcredential') {
@@ -854,6 +855,13 @@ class ThesslstoreModule extends Module
 
             // Load the helpers required for this view
             Loader::loadHelpers($this, ['Form', 'Html', 'Widget']);
+
+            Loader::loadModels($this, ['ModuleManager']);
+            $module = $this->ModuleManager->getByClass(
+                \Illuminate\Support\Str::snake(get_class($this)),
+                Configure::get('Blesta.company_id')
+            );
+            $this->view->set('module', ($module[0] ?? (object) []));
 
             $module_rows = $this->getModuleRows();
             $vars = [];
@@ -888,8 +896,12 @@ class ThesslstoreModule extends Module
             } else {
                 $vars['packageGroupsArray'] = 'false';
             }
-            // Set unspecified checkboxes
-
+            Loader::loadModels($this, ['ModuleManager']);
+            $module = $this->ModuleManager->getByClass(
+                \Illuminate\Support\Str::snake(get_class($this)),
+                Configure::get('Blesta.company_id')
+            );
+            $this->view->set('module', ($module[0] ?? (object) []));
             $this->view->set('vars', (object)$vars);
             return $this->view->fetch();
         } elseif ($scr == 'setupprice') {
@@ -1385,7 +1397,9 @@ class ThesslstoreModule extends Module
                     }
                 }
                 $urlRedirect = explode('&', $_SERVER['REQUEST_URI']);
-                if ($countOfImportPackages == 0) {
+                if (empty($products)) {
+                    header('Location:' . $urlRedirect[0] . '&error=no_products');
+                } elseif ($countOfImportPackages == 0) {
                     header('Location:' . $urlRedirect[0] . '&error=true'); /* Redirect browser */
                 } else {
                     header('Location:' . $urlRedirect[0] . '&error=false&count=' . $countOfImportPackages); /* Redirect browser */
