@@ -1,0 +1,90 @@
+{
+    "id": 1,
+    "name": "TheSSLStore Configurable Options",
+    "description": "Configurable options for TheSSLStore SSL certificate provisioning",
+    "hidden": 0,
+    "hide_options": 0,
+    "options": [
+        {
+            "id": 1,
+            "label": "Additional Server",
+            "name": "additional_server",
+            "description": "Number of additional server licenses for the SSL certificate (0-9)",
+            "type": "quantity",
+            "addable": 1,
+            "editable": 1,
+            "hidden": 0,
+            "disable_pricing": 1,
+            "hide_on_invoice": 1,
+            "values": [
+                {
+                    "id": 1,
+                    "name": "",
+                    "value": "",
+                    "default": 0,
+                    "status": "active",
+                    "order": 0,
+                    "min": 0,
+                    "max": 9,
+                    "step": 1,
+                    "image": null,
+                    "pricing": [
+                        {
+                            "id": 1,
+                            "term": 1,
+                            "period": "month",
+                            "price": "0.0000",
+                            "price_renews": "0.0000",
+                            "price_transfer": null,
+                            "setup_fee": "0.0000",
+                            "cancel_fee": "0.0000",
+                            "currency": "USD",
+                            "precision": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "label": "Additional SAN",
+            "name": "additional_san",
+            "description": "Number of additional Subject Alternative Names for the SSL certificate",
+            "type": "quantity",
+            "addable": 1,
+            "editable": 1,
+            "hidden": 0,
+            "disable_pricing": 1,
+            "hide_on_invoice": 1,
+            "values": [
+                {
+                    "id": 2,
+                    "name": "",
+                    "value": "",
+                    "default": 0,
+                    "status": "active",
+                    "order": 0,
+                    "min": 0,
+                    "max": null,
+                    "step": 1,
+                    "image": null,
+                    "pricing": [
+                        {
+                            "id": 2,
+                            "term": 1,
+                            "period": "month",
+                            "price": "0.0000",
+                            "price_renews": "0.0000",
+                            "price_transfer": null,
+                            "setup_fee": "0.0000",
+                            "cancel_fee": "0.0000",
+                            "currency": "USD",
+                            "precision": 2
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "condition_sets": []
+}
