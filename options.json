@@ -20,7 +20,7 @@
                 {
                     "id": 1,
                     "name": "Additional Server",
-                    "value": "",
+                    "value": null,
                     "default": 0,
                     "status": "active",
                     "order": 0,
@@ -60,7 +60,7 @@
                 {
                     "id": 2,
                     "name": "Additional SAN",
-                    "value": "",
+                    "value": null,
                     "default": 0,
                     "status": "active",
                     "order": 0,
