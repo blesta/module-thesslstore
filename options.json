@@ -19,7 +19,7 @@
             "values": [
                 {
                     "id": 1,
-                    "name": "",
+                    "name": "Additional Server",
                     "value": "",
                     "default": 0,
                     "status": "active",
@@ -59,7 +59,7 @@
             "values": [
                 {
                     "id": 2,
-                    "name": "",
+                    "name": "Additional SAN",
                     "value": "",
                     "default": 0,
                     "status": "active",
