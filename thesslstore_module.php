@@ -7,20 +7,10 @@
 class ThesslstoreModule extends Module
 {
     /**
-     * @var string The version of this module
-     */
-    private static $version = '1.7.0';
-
-    /**
-     * @var string The name of this module
-     */
-    private static $name = 'TheSSLStore Module';
-
-    /**
      * @var string API Partner Code
      */
-
     private $api_partner_code = '';
+
     /**
      * @var string The authors of this module
      */
@@ -38,36 +28,9 @@ class ThesslstoreModule extends Module
 
         // Load the language required by this module
         Language::loadLang('thesslstore_module', null, dirname(__FILE__) . DS . 'language' . DS);
-    }
 
-    /**
-     * Returns the name of this module
-     *
-     * @return string The common name of this module
-     */
-    public function getName()
-    {
-        return self::$name;
-    }
-
-    /**
-     * Returns the version of this module
-     *
-     * @return string The current version of this module
-     */
-    public function getVersion()
-    {
-        return self::$version;
-    }
-
-    /**
-     * Returns the name and URL for the authors of this module
-     *
-     * @return array A numerically indexed array that contains an array with key/value pairs for 'name' and 'url', representing the name and URL of the authors of this module
-     */
-    public function getAuthors()
-    {
-        return self::$authors;
+        // Load module config
+        $this->loadConfig(dirname(__FILE__) . DS . 'config.json');
     }
 
     /**
