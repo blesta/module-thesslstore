@@ -1,5 +1,5 @@
 {
-    "version": "2.0.0",
+    "version": "2.0.1",
     "name": "TheSSLStore Module",
     "description": "Sell SSL Certificates using this module.",
     "authors": [
@@ -17,5 +17,8 @@
         "group": "Module Group Name",
         "row_key": "module_row_field_key"
     },
-    "icon": "bi-shield-lock"
+    "logo": {
+        "light": "views/default/images/logo.png",
+        "dark": "views/default/images/logo-dark.png"
+    }
 }
