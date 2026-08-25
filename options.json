@@ -9,10 +9,10 @@
             "id": 1,
             "label": "Additional Server",
             "name": "additional_server",
-            "description": "Number of additional server licenses for the SSL certificate (0-9)",
+            "description": "Number of additional server licenses for the SSL certificate. Prices must be configured by the admin before attaching this group; the shipped pricing rows are zero-cost with pricing disabled.",
             "type": "quantity",
             "addable": 1,
-            "editable": 1,
+            "editable": 0,
             "hidden": 0,
             "disable_pricing": 1,
             "hide_on_invoice": 1,
@@ -31,15 +31,69 @@
                     "pricing": [
                         {
                             "id": 1,
-                            "term": 1,
+                            "term": 12,
                             "period": "month",
                             "price": "0.0000",
                             "price_renews": "0.0000",
                             "price_transfer": null,
                             "setup_fee": "0.0000",
                             "cancel_fee": "0.0000",
-                            "currency": "USD",
-                            "precision": 2
+                            "currency": "USD"
+                        },
+                        {
+                            "id": 2,
+                            "term": 24,
+                            "period": "month",
+                            "price": "0.0000",
+                            "price_renews": "0.0000",
+                            "price_transfer": null,
+                            "setup_fee": "0.0000",
+                            "cancel_fee": "0.0000",
+                            "currency": "USD"
+                        },
+                        {
+                            "id": 3,
+                            "term": 36,
+                            "period": "month",
+                            "price": "0.0000",
+                            "price_renews": "0.0000",
+                            "price_transfer": null,
+                            "setup_fee": "0.0000",
+                            "cancel_fee": "0.0000",
+                            "currency": "USD"
+                        },
+                        {
+                            "id": 4,
+                            "term": 1,
+                            "period": "year",
+                            "price": "0.0000",
+                            "price_renews": "0.0000",
+                            "price_transfer": null,
+                            "setup_fee": "0.0000",
+                            "cancel_fee": "0.0000",
+                            "currency": "USD"
+                        },
+                        {
+                            "id": 5,
+                            "term": 2,
+                            "period": "year",
+                            "price": "0.0000",
+                            "price_renews": "0.0000",
+                            "price_transfer": null,
+                            "setup_fee": "0.0000",
+                            "cancel_fee": "0.0000",
+                            "currency": "USD"
+                        },
+                        {
+                            "id": 6,
+                            "term": 3,
+                            "period": "year",
+                            "price": "0.0000",
+                            "price_renews": "0.0000",
+                            "price_transfer": null,
+                            "setup_fee": "0.0000",
+                            "cancel_fee": "0.0000",
+                            "currency": "USD"
                         }
                     ]
                 }
@@ -49,10 +103,10 @@
             "id": 2,
             "label": "Additional SAN",
             "name": "additional_san",
-            "description": "Number of additional Subject Alternative Names for the SSL certificate",
+            "description": "Number of additional Subject Alternative Names for the SSL certificate. The maximum allowed varies per product; admins should adjust the limit per package/product. Prices must be configured by the admin before attaching this group; the shipped pricing rows are zero-cost with pricing disabled.",
             "type": "quantity",
             "addable": 1,
-            "editable": 1,
+            "editable": 0,
             "hidden": 0,
             "disable_pricing": 1,
             "hide_on_invoice": 1,
@@ -65,21 +119,75 @@
                     "status": "active",
                     "order": 0,
                     "min": 0,
-                    "max": null,
+                    "max": 10,
                     "step": 1,
                     "image": null,
                     "pricing": [
                         {
-                            "id": 2,
-                            "term": 1,
+                            "id": 7,
+                            "term": 12,
                             "period": "month",
                             "price": "0.0000",
                             "price_renews": "0.0000",
                             "price_transfer": null,
                             "setup_fee": "0.0000",
                             "cancel_fee": "0.0000",
-                            "currency": "USD",
-                            "precision": 2
+                            "currency": "USD"
+                        },
+                        {
+                            "id": 8,
+                            "term": 24,
+                            "period": "month",
+                            "price": "0.0000",
+                            "price_renews": "0.0000",
+                            "price_transfer": null,
+                            "setup_fee": "0.0000",
+                            "cancel_fee": "0.0000",
+                            "currency": "USD"
+                        },
+                        {
+                            "id": 9,
+                            "term": 36,
+                            "period": "month",
+                            "price": "0.0000",
+                            "price_renews": "0.0000",
+                            "price_transfer": null,
+                            "setup_fee": "0.0000",
+                            "cancel_fee": "0.0000",
+                            "currency": "USD"
+                        },
+                        {
+                            "id": 10,
+                            "term": 1,
+                            "period": "year",
+                            "price": "0.0000",
+                            "price_renews": "0.0000",
+                            "price_transfer": null,
+                            "setup_fee": "0.0000",
+                            "cancel_fee": "0.0000",
+                            "currency": "USD"
+                        },
+                        {
+                            "id": 11,
+                            "term": 2,
+                            "period": "year",
+                            "price": "0.0000",
+                            "price_renews": "0.0000",
+                            "price_transfer": null,
+                            "setup_fee": "0.0000",
+                            "cancel_fee": "0.0000",
+                            "currency": "USD"
+                        },
+                        {
+                            "id": 12,
+                            "term": 3,
+                            "period": "year",
+                            "price": "0.0000",
+                            "price_renews": "0.0000",
+                            "price_transfer": null,
+                            "setup_fee": "0.0000",
+                            "cancel_fee": "0.0000",
+                            "currency": "USD"
                         }
                     ]
                 }
