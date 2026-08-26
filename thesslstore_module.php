@@ -163,7 +163,7 @@ class ThesslstoreModule extends Module
      */
     private function orderSynchronization()
     {
-        Loader::loadModels($this, ['Services']);
+        Loader::loadModels($this, ['Services', 'ModuleManager']);
         Loader::loadHelpers($this, ['Date']);
         $this->Date->setTimezone('UTC', 'UTC');
 
@@ -191,18 +191,82 @@ class ThesslstoreModule extends Module
 
         $api = $this->getApi($api_partner_code, $api_auth_token, $api_mode);
 
-        $two_month_before_date = strtotime('-2 Months') * 1000; // Convert into milliseconds
+        // Use a longer purchase-date window on the first run to correct renew dates previously
+        // set from the certificate expiration rather than the order expiration
+        $module = $this->getModule();
+        $full_resync = false;
+        if ($module) {
+            $meta = $this->ModuleManager->getMeta($module->id, 'tss_order_expiry_resync');
+            $full_resync = empty($meta->tss_order_expiry_resync);
+        }
+
+        $start_date = strtotime($full_resync ? '-25 Months' : '-2 Months') * 1000; // Convert into milliseconds
         $today_date = strtotime('now') * 1000; // Convert into milliseconds
 
-        $order_query_request = new order_query_request();
-        $order_query_request->StartDate = '/Date(' . $two_month_before_date . ')/';
-        $order_query_request->EndDate = '/Date(' . $today_date . ')/';
+        // Fetch all orders within the window, paging to stay under the API's per-request record
+        // limit of 999. Requesting that maximum also ensures a response from an API that ignores
+        // paging can never be an exactly-full page unless it was truncated at the server cap
+        $orders = [];
+        $page = 1;
+        $page_size = 999;
+        $complete = false;
 
-        $order_query_resp = $api->order_query($order_query_request);
+        do {
+            $order_query_request = new order_query_request();
+            $order_query_request->StartDate = '/Date(' . $start_date . ')/';
+            $order_query_request->EndDate = '/Date(' . $today_date . ')/';
+            $order_query_request->PageNumber = $page;
+            $order_query_request->PageSize = $page_size;
+
+            $order_query_resp = $api->order_query($order_query_request);
+
+            // Stop paging on a failed response, leaving the resync incomplete to retry later
+            if (!is_array($order_query_resp)) {
+                break;
+            }
+
+            // An empty page indicates the last page was reached
+            if (empty($order_query_resp)) {
+                $complete = true;
+                break;
+            }
+
+            // A repeated page means the API ignored paging after an exactly-full page, which
+            // may have been truncated at the server cap, so the resync stays incomplete
+            if (!empty($orders)
+                && ($order_query_resp[0]->TheSSLStoreOrderID ?? null) === ($orders[0]->TheSSLStoreOrderID ?? null)
+            ) {
+                break;
+            }
+
+            $count = count($order_query_resp);
+            $orders = array_merge($orders, $order_query_resp);
+            $page++;
+
+            // A short page is the last page, and an oversized page means the API ignored
+            // paging and returned everything; only an exactly-full page may continue
+            if ($count != $page_size) {
+                $complete = true;
+                break;
+            }
+        } while ($page <= 100);
 
         // Cannot continue without an order query
-        if (empty($order_query_resp) || !is_array($order_query_resp)) {
+        if (empty($orders)) {
+            // A successful query may legitimately contain no orders
+            if ($full_resync && $module && $complete) {
+                $this->markOrderExpiryResyncComplete($module->id);
+            }
+
             return;
+        }
+
+        // Index the orders by ID, keeping the first occurrence of any duplicates
+        $orders_by_id = [];
+        foreach ($orders as $order) {
+            if (isset($order->TheSSLStoreOrderID) && !isset($orders_by_id[$order->TheSSLStoreOrderID])) {
+                $orders_by_id[$order->TheSSLStoreOrderID] = $order;
+            }
         }
 
         // Fetch all SSL Store module active/suspended services to sync
@@ -217,56 +281,78 @@ class ThesslstoreModule extends Module
 
             $fields = $this->serviceFieldsToObject($service_obj->fields);
 
-            // Require the SSL Store order ID field be available
-            if (!isset($fields->thesslstore_order_id)) {
+            // Require the SSL Store order ID field be available and match a fetched order
+            if (!isset($fields->thesslstore_order_id)
+                || !isset($orders_by_id[$fields->thesslstore_order_id])
+            ) {
                 continue;
             }
 
-            foreach ($order_query_resp as $order) {
-                // Skip orders that don't match the service field's order ID
-                if ($order->TheSSLStoreOrderID != $fields->thesslstore_order_id) {
-                    continue;
+            $order = $orders_by_id[$fields->thesslstore_order_id];
+
+            // Update the renewal date from the order expiration; orders without one are
+            // skipped rather than falling back to the certificate expiration, which may
+            // be shorter than the paid order period
+            if (!empty($order->OrderExpiryDateInUTC)) {
+                // Get the date 30 days before the order expires
+                $end_date = $this->Date->modify(
+                    strtotime($order->OrderExpiryDateInUTC),
+                    '-30 days',
+                    'Y-m-d H:i:s',
+                    'UTC'
+                );
+
+                if ($end_date != $service_obj->date_renews) {
+                    $vars['date_renews'] = $end_date . 'Z';
+                    $this->Services->edit($service_obj->id, $vars, $bypass_module = true);
                 }
+            }
 
-                // Update renewal date
-                if (!empty($order->CertificateEndDateInUTC)) {
-                    // Get the date 30 days before the certificate expires
-                    $end_date = $this->Date->modify(
-                        strtotime($order->CertificateEndDateInUTC),
-                        '-30 days',
-                        'Y-m-d H:i:s',
-                        'UTC'
-                    );
-
-                    if ($end_date != $service_obj->date_renews) {
-                        $vars['date_renews'] = $end_date . 'Z';
-                        $this->Services->edit($service_obj->id, $vars, $bypass_module = true);
-                    }
-                }
-
-                // Update domain name(fqdn)
-                if (!empty($order->CommonName)) {
-                    if (isset($fields->thesslstore_fqdn)) {
-                        if ($fields->thesslstore_fqdn != $order->CommonName) {
-                            // Update
-                            $this->Services->editField($service_obj->id, [
-                                'key' => 'thesslstore_fqdn',
-                                'value' => $order->CommonName,
-                                'encrypted' => 0
-                            ]);
-                        }
-                    } else {
-                        // Add
-                        $this->Services->addField($service_obj->id, [
+            // Update domain name(fqdn)
+            if (!empty($order->CommonName)) {
+                if (isset($fields->thesslstore_fqdn)) {
+                    if ($fields->thesslstore_fqdn != $order->CommonName) {
+                        // Update
+                        $this->Services->editField($service_obj->id, [
                             'key' => 'thesslstore_fqdn',
                             'value' => $order->CommonName,
                             'encrypted' => 0
                         ]);
                     }
+                } else {
+                    // Add
+                    $this->Services->addField($service_obj->id, [
+                        'key' => 'thesslstore_fqdn',
+                        'value' => $order->CommonName,
+                        'encrypted' => 0
+                    ]);
                 }
-                break;
             }
         }
+
+        // Mark the one-time full resync as complete so subsequent runs use the shorter window
+        if ($full_resync && $module && $complete) {
+            $this->markOrderExpiryResyncComplete($module->id);
+        }
+    }
+
+    /**
+     * Flags the one-time order expiry resync as complete for the given module
+     *
+     * @param int $module_id The ID of the module to flag
+     */
+    private function markOrderExpiryResyncComplete($module_id)
+    {
+        // Preserve any existing meta since ModuleManager::setMeta() replaces all meta
+        $meta = (array) $this->ModuleManager->getMeta($module_id);
+        $meta['tss_order_expiry_resync'] = '1';
+
+        $vars = [];
+        foreach ($meta as $key => $value) {
+            $vars[] = ['key' => $key, 'value' => $value];
+        }
+
+        $this->ModuleManager->setMeta($module_id, $vars);
     }
 
     /**

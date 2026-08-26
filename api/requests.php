@@ -228,7 +228,8 @@ class order_query_request extends baserequest
     public $SubUserID;
     public $ProductCode;
     public $DateTimeCulture;
-
+    public $PageNumber;
+    public $PageSize;
 }
 
 class order_certificaterevokerequest_request extends baserequest
