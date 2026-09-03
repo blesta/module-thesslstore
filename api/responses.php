@@ -165,6 +165,7 @@ class order_response extends baseresponse
     public $SerialNumber;
     public $CertificateStartDateInUTC;
     public $CertificateEndDateInUTC;
+    public $OrderExpiryDateInUTC;
     public $PurchaseDateInUTC;
     public $PollDateInUTC;
 }
@@ -276,6 +277,7 @@ class order_query_response extends baseresponse
     public $SerialNumber;
     public $CertificateStartDateInUTC;
     public $CertificateEndDateInUTC;
+    public $OrderExpiryDateInUTC;
     public $PurchaseDateInUTC;
     public $PollDateInUTC;
 }
